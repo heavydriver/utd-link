@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="flex flex-col min-h-screen">
+        <!-- navbar -->
+        {% include "navbar.html" %}
+
+        <div class="flex-grow self-center mx-20 md:mx-10 lg:mx-0 mt-16 max-w-5xl">
+            <!-- hero section -->
+            <div class="flex flex-wrap md:flex-nowrap justify-center">
+                <img class="w-full md:w-80 lg:w-100 max-h-100 object-cover rounded-md"
+                     src="https://images.unsplash.com/photo-1523240795612-9a054b0db644" alt="hero-image"/>
+                <div class="flex flex-col md:pl-5 max-w-lg text-wrap">
+                    <h2 class="py-3 font-semibold text-2xl">
+                        Connecting UTD Students to Opportunities
+                    </h2>
+                    <p class="col-span-3 pb-5 text-md text-gray-800">
+                        Discover events, internships, and projects hosted by student
+                        organizations and faculty
+                    </p>
+                    <div class="flex sm:flex-row flex-col items-start gap-2 mt-auto mb-4">
+                        <a class="bg-utdOrange text-white hover:bg-orange-500 px-3 py-2 rounded-lg font-semibold text-md transition duration-150 ease-in-out hover:cursor-pointer"
+                           href="{{ url_for("login") }}">
+                            Explore Opportunities
+                        </a>
+                        <a class="bg-gray-100 hover:bg-gray-300 mt-2 sm:mt-0 px-3 py-2 border-1 border-utdOrange rounded-lg font-semibold text-md transition duration-150 ease-in-out hover:cursor-pointer off"
+                           href="{{ url_for("about") }}">
+                            Learn More
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- features -->
+            <div class="mt-10">
+                <h2 class="font-bold text-2xl">Features</h2>
+                <div class="justify-items-center gap-5 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 mt-3">
+                    <div class="flex flex-col gap-2 max-w-60">
+                        <img class="w-full md:w-60 max-h-40 object-cover"
+                             src="https://plus.unsplash.com/premium_vector-1721296173934-157e1d6e2c20"
+                             alt="find-opp-image"/>
+                        <h3 class="font-semibold text-lg">Find Opportunities</h3>
+                        <p class="text-gray-800">Search across departments and clubs</p>
+                    </div>
+                    <div class="flex flex-col gap-2 max-w-60">
+                        <img class="w-full md:w-60 max-h-40 object-cover"
+                             src="https://plus.unsplash.com/premium_vector-1721296174324-5b5b4068db8d"
+                             alt="find-opp-image"/>
+                        <h3 class="font-semibold text-lg">Sign Up Easily</h3>
+                        <p class="text-gray-800">Join events or internships in a click</p>
+                    </div>
+                    <div class="flex flex-col gap-2 max-w-60">
+                        <img class="w-full md:w-60 max-h-40 object-cover"
+                             src="https://plus.unsplash.com/premium_vector-1721296173933-61a7b99282fc"
+                             alt="find-opp-image"/>
+                        <h3 class="font-semibold text-lg">Build Your Profile</h3>
+                        <p class="text-gray-800">Track what you've participated in</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- footer -->
+        {% include "footer.html" %}
+    </div>
+{% endblock content %}

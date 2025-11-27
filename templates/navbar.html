@@ -1,0 +1,22 @@
+<nav class="bg-white shadow-gray-200 shadow-sm px-6 py-4">
+    <div class="flex justify-between items-center mx-auto max-w-6xl">
+        <a class="font-bold text-lg" href="#"
+        ><span class="text-utdOrange">UTD</span>Link</a
+        >
+        {% if session["user_id"] %}
+            <div class="space-x-4">
+                <a class="text-gray-700 hover:text-utdOrange transition-colors" href="{{ url_for("profile") }}">
+                    Profile
+                </a>
+                <a class="text-gray-700 hover:text-utdOrange transition-colors" href="{{ url_for("logout") }}">
+                    Logout
+                </a>
+            </div>
+        {% else %}
+            <a class="bg-utdOrange text-white hover:bg-orange-500 px-3 py-2 rounded-lg font-semibold text-md hover:scale-110 transition duration-250 ease-in-out hover:cursor-pointer"
+               href="{{ url_for("login") }}">
+                Login
+            </a>
+        {% endif %}
+    </div>
+</nav>

@@ -1,0 +1,51 @@
+from .connection import get_conn, put_conn
+
+
+def get_user_by_email(email: str):
+    conn = get_conn()
+    cur = conn.cursor()
+
+    cur.execute("SELECT * FROM users WHERE email = %s", (email,))
+    row = cur.fetchone()
+
+    cur.close()
+    put_conn(conn)
+
+    return row
+
+
+def get_user_by_net_id(net_id: str):
+    conn = get_conn()
+    cur = conn.cursor()
+
+    cur.execute("SELECT * FROM users WHERE utd_net_id = %s", (net_id,))
+    row = cur.fetchone()
+
+    cur.close()
+    put_conn(conn)
+
+    return row
+
+
+def create_new_user(first_name, last_name, net_id, email, password, role):
+    conn = get_conn()
+    cur = conn.cursor()
+
+    cur.execute(
+        "INSERT INTO users (first_name, last_name, utd_net_id, email, password, role) VALUES (%s, %s, %s, %s, %s, %s) RETURNING user_id",
+        (
+            first_name,
+            last_name,
+            net_id,
+            email,
+            password,
+            role,
+        ),
+    )
+    new_user_id = cur.fetchone()["user_id"]
+    conn.commit()
+
+    cur.close()
+    put_conn(conn)
+
+    return new_user_id

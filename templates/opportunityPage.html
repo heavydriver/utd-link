@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+      rel="stylesheet"
+    />
+    <style type="text/tailwindcss">
+      @theme {
+        --color-utdOrange: #ff8200;
+        --font-sans: "Poppins", sans-serif;
+      }
+
+      body {
+        @apply font-sans;
+      }
+    </style>
+  </head>
+  <body class="flex flex-col bg-gray-50 min-h-screen">
+    <!-- navbar -->
+    <nav class="bg-white shadow-gray-200 shadow-sm px-6 py-4">
+      <div class="flex justify-between items-center mx-auto max-w-6xl">
+        <a class="font-bold text-lg" href="/dashboard.html"
+          ><span class="text-utdOrange">UTD</span>Link</a
+        >
+        <div class="space-x-4">
+          <a class="text-gray-700 hover:text-utdOrange transition-colors" href="/profile.html">
+            Profile
+          </a>
+          <a class="text-gray-700 hover:text-utdOrange transition-colors" href="/logout.html">
+            Logout
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- main content -->
+    <main class="flex-grow self-center mt-10 mb-12 px-5 w-full max-w-6xl">
+      <div class="flex flex-col lg:flex-row gap-8">
+        <!-- opportunity image -->
+        <img
+          src="https://fieldeffect.com/hubfs/Website-Blog/Blog-Thumb-Capture-the-flag-What-you-should-know-about-cybersecurity-CTFs.jpg"
+          class="w-full lg:w-120 h-100 rounded-xl object-cover shadow"
+        />
+
+        <div class="flex-1 space-y-4">
+          <!-- title -->
+          <h1 class="text-3xl font-bold">CTF @ UTD</h1>
+
+          <!-- date and category -->
+          <div class="flex items-center gap-3">
+            <span class="text-gray-600">12/12/2025</span>
+            <span class="px-3 py-1 rounded-full bg-orange-200 text-gray-800 text-sm">
+              Competition
+            </span>
+          </div>
+
+          <!-- description -->
+          <p class="text-gray-700 leading-relaxed">Capture-the-flag cybersecurity competition</p>
+
+          <!-- organizer -->
+          <a href="#" class="text-blue-600 underline hover:text-blue-800 transition-colors"
+            >Hosted by: CSG UTD</a
+          >
+
+          <!-- Signup button -->
+          <div class="mt-10 flex">
+            <form class="ml-auto" action="/signup" method="post">
+              <button
+                type="submit"
+                class="ml-auto bg-utdOrange text-xl text-white hover:bg-orange-500 px-3 py-2 rounded-lg font-semibold text-md transition duration-150 ease-in-out hover:cursor-pointer"
+              >
+                Signup
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- footer -->
+    <footer class="bg-gray-50 mt-auto py-6 border-gray-200 border-t">
+      <div
+        class="flex md:flex-row flex-col justify-between items-center gap-3 mx-auto px-6 max-w-6xl"
+      >
+        <div class="flex flex-wrap justify-center md:justify-start gap-6 font-medium text-sm">
+          <a href="/about.html" class="hover:text-utdOrange transition-colors"> About </a>
+          <a href="mailto:vjm230001@utdallas.edu" class="hover:text-utdOrange transition-colors">
+            Contact
+          </a>
+          <a href="/privacy.html" class="hover:text-utdOrange transition-colors">
+            Privacy Policy
+          </a>
+        </div>
+        <p class="text-gray-500 text-sm">
+          &copy; 2025 <span class="font-semibold text-black">UTDLink</span>
+        </p>
+      </div>
+    </footer>
+  </body>
+</html>
