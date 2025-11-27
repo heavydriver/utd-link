@@ -1,140 +1,87 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
-      rel="stylesheet"
-    />
-    <style type="text/tailwindcss">
-      @theme {
-        --color-utdOrange: #ff8200;
-        --font-sans: "Poppins", sans-serif;
-      }
+{% extends "base.html" %}
 
-      body {
-        @apply font-sans;
-      }
-    </style>
-  </head>
-  <body class="flex flex-col bg-gray-50 min-h-screen">
+{% block content %}
     <!-- navbar -->
-    <nav class="bg-white shadow-gray-200 shadow-sm px-6 py-4">
-      <div class="flex justify-between items-center mx-auto max-w-6xl">
-        <a class="font-bold text-lg" href="/dashboard.html"
-          ><span class="text-utdOrange">UTD</span>Link</a
-        >
-        <div class="space-x-4">
-          <a class="text-gray-700 hover:text-utdOrange transition-colors" href="/profile.html">
-            Profile
-          </a>
-          <a class="text-gray-700 hover:text-utdOrange transition-colors" href="/logout.html">
-            Logout
-          </a>
-        </div>
-      </div>
-    </nav>
+    {% include "navbar.html" %}
 
     <!-- main content -->
     <main class="flex-grow self-center mt-10 mb-12 px-5 w-full max-w-6xl">
-      <!-- header -->
-      <div class="flex flex-wrap justify-between items-center gap-3 mb-6">
-        <h2 class="font-bold text-2xl">Add New Opportunity</h2>
-      </div>
+        <!-- header -->
+        <div class="flex flex-wrap justify-between items-center gap-3 mb-6">
+            <h2 class="font-bold text-2xl">Add New Opportunity</h2>
+        </div>
 
-      <div class="flex items-center mx-auto max-w-lg">
-        <!-- create opportunity form -->
-        <form action="/register" method="post" class="flex flex-col w-full">
-          <label for="title" class="font-semibold text-lg">Title</label>
-          <input
-            type="text"
-            id="title"
-            name="tile"
-            placeholder="Enter the title"
-            required
-            class="bg-gray-50 shadow shadow-gray-100 mt-1 p-3 border border-gray-300 focus:border-utdOrange rounded-md outline-none focus:ring-2 focus:ring-utdOrange/50 transition-colors duration-300"
-          />
+        <div class="flex items-center mx-auto max-w-lg">
+            <!-- create opportunity form -->
+            <form action="/register" method="post" class="flex flex-col w-full">
+                <label for="title" class="font-semibold text-lg">Title</label>
+                <input
+                        type="text"
+                        id="title"
+                        name="tile"
+                        placeholder="Enter the title"
+                        required
+                        class="bg-gray-50 shadow shadow-gray-100 mt-1 p-3 border border-gray-300 focus:border-utdOrange rounded-md outline-none focus:ring-2 focus:ring-utdOrange/50 transition-colors duration-300"
+                />
 
-          <label for="description" class="mt-4 font-semibold text-lg">Description</label>
-          <textarea
-            id="description"
-            name="description"
-            class="bg-gray-50 shadow shadow-gray-100 mt-1 p-3 border border-gray-300 focus:border-utdOrange rounded-md outline-none focus:ring-2 focus:ring-utdOrange/50 transition-colors duration-300"
-          ></textarea>
+                <label for="description" class="mt-4 font-semibold text-lg">Description</label>
+                <textarea
+                        id="description"
+                        name="description"
+                        class="bg-gray-50 shadow shadow-gray-100 mt-1 p-3 border border-gray-300 focus:border-utdOrange rounded-md outline-none focus:ring-2 focus:ring-utdOrange/50 transition-colors duration-300"
+                ></textarea>
 
-          <!-- start/end date -->
-          <div class="flex sm:flex-row flex-col gap-4 mt-4 w-full">
-            <div class="flex flex-col">
-              <label for="startDate" class="font-semibold text-lg">Start Date</label>
-              <input
-                type="date"
-                id="startDate"
-                name="startDate"
-                required
-                class="bg-gray-50 shadow shadow-gray-100 mt-1 p-3 border border-gray-300 focus:border-utdOrange rounded-md outline-none focus:ring-2 focus:ring-utdOrange/50 transition-colors duration-300"
-              />
-            </div>
+                <!-- start/end date -->
+                <div class="flex sm:flex-row flex-col gap-4 mt-4 w-full">
+                    <div class="flex flex-col">
+                        <label for="startDate" class="font-semibold text-lg">Start Date</label>
+                        <input
+                                type="date"
+                                id="startDate"
+                                name="startDate"
+                                required
+                                class="bg-gray-50 shadow shadow-gray-100 mt-1 p-3 border border-gray-300 focus:border-utdOrange rounded-md outline-none focus:ring-2 focus:ring-utdOrange/50 transition-colors duration-300"
+                        />
+                    </div>
 
-            <div class="flex flex-col">
-              <label for="endDate" class="font-semibold text-lg">End Date</label>
-              <input
-                type="date"
-                id="endDate"
-                name="endDate"
-                class="bg-gray-50 shadow shadow-gray-100 mt-1 p-3 border border-gray-300 focus:border-utdOrange rounded-md outline-none focus:ring-2 focus:ring-utdOrange/50 transition-colors duration-300"
-              />
-            </div>
-          </div>
+                    <div class="flex flex-col">
+                        <label for="endDate" class="font-semibold text-lg">End Date</label>
+                        <input
+                                type="date"
+                                id="endDate"
+                                name="endDate"
+                                class="bg-gray-50 shadow shadow-gray-100 mt-1 p-3 border border-gray-300 focus:border-utdOrange rounded-md outline-none focus:ring-2 focus:ring-utdOrange/50 transition-colors duration-300"
+                        />
+                    </div>
+                </div>
 
-          <label for="flyer" class="mt-4 font-semibold text-lg">Upload Flyer</label>
-          <input
-            type="file"
-            id="flyer"
-            name="flyer"
-            required
-            class="bg-gray-50 hover:file:bg-orange-400 file:bg-orange-300 shadow shadow-gray-100 file:mr-5 file:px-4 file:py-2 border border-gray-300 file:border-0 rounded-lg file:rounded-md outline-none file:font-semibold text-gray-500 file:text-black text-sm file:text-sm"
-          />
+                <label for="flyer" class="mt-4 font-semibold text-lg">Upload Flyer</label>
+                <input
+                        type="file"
+                        id="flyer"
+                        name="flyer"
+                        required
+                        class="bg-gray-50 hover:file:bg-orange-400 file:bg-orange-300 shadow shadow-gray-100 file:mr-5 file:px-4 file:py-2 border border-gray-300 file:border-0 rounded-lg file:rounded-md outline-none file:font-semibold text-gray-500 file:text-black text-sm file:text-sm"
+                />
 
-          <label for="maxSignups" class="mt-4 font-semibold text-lg">Maximum Signups</label>
-          <input
-            type="number"
-            id="maxSignups"
-            name="maxSignups"
-            class="bg-gray-50 shadow shadow-gray-100 mt-1 p-3 border border-gray-300 focus:border-utdOrange rounded-md outline-none focus:ring-2 focus:ring-utdOrange/50 transition-colors duration-300"
-          />
+                <label for="maxSignups" class="mt-4 font-semibold text-lg">Maximum Signups</label>
+                <input
+                        type="number"
+                        id="maxSignups"
+                        name="maxSignups"
+                        class="bg-gray-50 shadow shadow-gray-100 mt-1 p-3 border border-gray-300 focus:border-utdOrange rounded-md outline-none focus:ring-2 focus:ring-utdOrange/50 transition-colors duration-300"
+                />
 
-          <button
-            type="submit"
-            class="bg-utdOrange hover:bg-orange-500 hover:shadow-lg mt-6 px-3 py-3 rounded-lg font-semibold text-white text-lg transition hover:-translate-y-0.5 duration-250 ease-in-out hover:cursor-pointer"
-          >
-            Submit
-          </button>
-        </form>
-      </div>
+                <button
+                        type="submit"
+                        class="bg-utdOrange hover:bg-orange-500 hover:shadow-lg mt-6 px-3 py-3 rounded-lg font-semibold text-white text-lg transition hover:-translate-y-0.5 duration-250 ease-in-out hover:cursor-pointer"
+                >
+                    Submit
+                </button>
+            </form>
+        </div>
     </main>
 
     <!-- footer -->
-    <footer class="bg-gray-50 mt-auto py-6 border-gray-200 border-t">
-      <div
-        class="flex md:flex-row flex-col justify-between items-center gap-3 mx-auto px-6 max-w-6xl"
-      >
-        <div class="flex flex-wrap justify-center md:justify-start gap-6 font-medium text-sm">
-          <a href="/about.html" class="hover:text-utdOrange transition-colors"> About </a>
-          <a href="mailto:vjm230001@utdallas.edu" class="hover:text-utdOrange transition-colors">
-            Contact
-          </a>
-          <a href="/privacy.html" class="hover:text-utdOrange transition-colors">
-            Privacy Policy
-          </a>
-        </div>
-        <p class="text-gray-500 text-sm">
-          &copy; 2025 <span class="font-semibold text-black">UTDLink</span>
-        </p>
-      </div>
-    </footer>
-  </body>
-</html>
+    {% include "footer.html" %}
+{% endblock content %}
