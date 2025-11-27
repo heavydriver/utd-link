@@ -61,79 +61,37 @@
         </div>
 
         <!-- opportunity card -->
-        <div class="gap-6 grid sm:grid-cols-2 lg:grid-cols-3 mt-8">
-            <!-- card 1 -->
-            <div
-                    class="bg-white shadow-md hover:shadow-lg border border-gray-100 rounded-xl overflow-hidden transition duration-300"
-            >
-                <img
-                        src="https://images.unsplash.com/photo-1519389950473-47ba0277781c"
-                        alt="AI Research"
-                        class="w-full object-cover aspect-video"
-                />
-                <div class="p-4">
-                    <h3 class="font-semibold text-gray-800 text-lg">AI Research Assistant</h3>
-                    <div class="flex justify-between items-center mt-1">
-                        <p class="text-gray-700 text-sm">AI Lab</p>
-                        <p class="bg-orange-200 px-3 py-2 rounded-2xl text-gray-800 text-xs">Research</p>
+        {% if opportunities %}
+            <div class="gap-6 grid sm:grid-cols-2 lg:grid-cols-3 mt-8">
+                {% for opp in opportunities %}
+                    <div
+                            class="bg-white shadow-md hover:shadow-lg border border-gray-100 rounded-xl overflow-hidden transition duration-300"
+                    >
+                        <img
+                                src="{{ opp.opp_image_url }}"
+                                alt="{{ opp.title }}"
+                                class="w-full object-cover aspect-video"
+                        />
+                        <div class="p-4">
+                            <a href="{{ url_for("opportunity_details", opp_id=opp.opp_id) }}">
+                                <h3 class="font-semibold text-gray-800 text-lg truncate hover:underline hover:text-gray-900 transition-colors">{{ opp.title }}</h3>
+                            </a>
+                            <div class="flex justify-between items-center mt-1">
+                                <a href="{{ url_for("organization_details", org_id=opp.org_id) }}"
+                                   class="truncate max-w-3/5">
+                                    <p class="text-gray-700 text-sm truncate hover:underline hover:text-gray-900 transition-colors pr-4">{{ opp.org_name }}</p>
+                                </a>
+                                <div class="max-w-2/5">
+                                    <p class="bg-orange-200 px-3 py-2 rounded-2xl text-gray-800 text-xs truncate text-center">{{ opp.category.replace("_", " ").title() }}</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </div>
+                {% endfor %}
             </div>
-
-            <!-- card 2 -->
-            <div
-                    class="bg-white shadow-md hover:shadow-lg border border-gray-100 rounded-xl overflow-hidden transition duration-300"
-            >
-                <img
-                        src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f"
-                        alt="Internship"
-                        class="w-full object-cover aspect-video"
-                />
-                <div class="p-4">
-                    <h3 class="font-semibold text-gray-800 text-lg">Software Engineering Internship</h3>
-                    <div class="flex justify-between items-center mt-1">
-                        <p class="text-gray-600 text-sm">ACM</p>
-                        <p class="bg-orange-200 px-3 py-2 rounded-2xl text-gray-800 text-xs">Internship</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- card 3 -->
-            <div
-                    class="bg-white shadow-md hover:shadow-lg border border-gray-100 rounded-xl overflow-hidden transition duration-300"
-            >
-                <img
-                        src="https://images.unsplash.com/photo-1571260899304-425eee4c7efc"
-                        alt="Scholarship"
-                        class="w-full object-cover aspect-video"
-                />
-                <div class="p-4">
-                    <h3 class="font-semibold text-gray-800 text-lg">Dean's Merit Scholarship</h3>
-                    <div class="flex justify-between items-center mt-1">
-                        <p class="text-gray-600 text-sm">UTD</p>
-                        <p class="bg-orange-200 px-3 py-2 rounded-2xl text-gray-800 text-xs">Scholarship</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- card 4 -->
-            <div
-                    class="bg-white shadow-md hover:shadow-lg border border-gray-100 rounded-xl overflow-hidden transition duration-300"
-            >
-                <img
-                        src="https://images.unsplash.com/photo-1542744173-05336fcc7ad4"
-                        alt="Event"
-                        class="w-full object-cover aspect-video"
-                />
-                <div class="p-4">
-                    <h3 class="font-semibold text-gray-800 text-lg">Career Networking Event</h3>
-                    <div class="flex justify-between items-center mt-1">
-                        <p class="text-gray-600 text-sm">Johnson School</p>
-                        <p class="bg-orange-200 px-3 py-2 rounded-2xl text-gray-800 text-xs">Networking</p>
-                    </div>
-                </div>
-            </div>
-        </div>
+        {% else %}
+            <h3 class="font-lg text-gray-700 mt-10">No opportunities found</h3>
+        {% endif %}
     </main>
 
     <!-- footer -->

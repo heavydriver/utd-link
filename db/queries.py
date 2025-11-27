@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from .connection import get_conn, put_conn
 
 
@@ -49,3 +51,39 @@ def create_new_user(first_name, last_name, net_id, email, password, role):
     put_conn(conn)
 
     return new_user_id
+
+
+def get_all_current_opportunities():
+    conn = get_conn()
+    cur = conn.cursor()
+
+    today = datetime.now()
+    date = today.strftime("%Y-%m-%d")
+
+    cur.execute(
+        """
+        SELECT opp_id,
+               title,
+               opp_image_url,
+               category,
+               start_date,
+               end_date,
+               opp.org_id,
+               org.org_name
+        FROM opportunities AS opp,
+             organizations AS org
+        WHERE (start_date >= %s OR end_date <= %s)
+          AND opp.org_id = org.org_id
+        ORDER BY start_date ASC;
+        """,
+        (
+            date,
+            date,
+        ),
+    )
+    rows = cur.fetchall()
+
+    cur.close()
+    put_conn(conn)
+
+    return rows

@@ -3,7 +3,12 @@ import os
 from dotenv import load_dotenv
 from flask import Flask, request, render_template, flash, session, redirect, url_for
 
-from db.queries import get_user_by_email, get_user_by_net_id, create_new_user
+from db.queries import (
+    get_user_by_email,
+    get_user_by_net_id,
+    create_new_user,
+    get_all_current_opportunities,
+)
 from utils.auth import compare_password, hash_password, login_required
 from utils.validator import (
     validate_email,
@@ -144,7 +149,21 @@ def profile():
 @app.route("/dashboard", methods=["GET"])
 @login_required
 def dashboard():
-    return render_template("dashboard.html")
+    opportunities = get_all_current_opportunities()
+
+    return render_template("dashboard.html", opportunities=opportunities)
+
+
+@app.route("/opportunity/<int:opp_id>")
+@login_required
+def opportunity_details(opp_id: int):
+    return f"Opportunity {opp_id} details page"
+
+
+@app.route("/organization/<int:org_id>")
+@login_required
+def organization_details(org_id: int):
+    return f"Organization {org_id} details page"
 
 
 if __name__ == "__main__":
