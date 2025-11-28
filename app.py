@@ -8,6 +8,7 @@ from db.queries import (
     get_user_by_net_id,
     create_new_user,
     get_all_current_opportunities,
+    get_opportunity_details,
 )
 from utils.auth import compare_password, hash_password, login_required
 from utils.validator import (
@@ -150,14 +151,27 @@ def profile():
 @login_required
 def dashboard():
     opportunities = get_all_current_opportunities()
+    categories = list(
+        set(
+            [
+                opportunity["category"].replace("_", " ").title()
+                for opportunity in opportunities
+            ]
+        )
+    )
+    categories.sort()
 
-    return render_template("dashboard.html", opportunities=opportunities)
+    return render_template(
+        "dashboard.html", opportunities=opportunities, categories=categories
+    )
 
 
 @app.route("/opportunity/<int:opp_id>")
 @login_required
 def opportunity_details(opp_id: int):
-    return f"Opportunity {opp_id} details page"
+    opp_details = get_opportunity_details(opp_id)
+
+    return render_template("opportunityDetails.html", opp_details=opp_details)
 
 
 @app.route("/organization/<int:org_id>")

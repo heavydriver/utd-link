@@ -87,3 +87,33 @@ def get_all_current_opportunities():
     put_conn(conn)
 
     return rows
+
+
+def get_opportunity_details(opp_id: int):
+    conn = get_conn()
+    cur = conn.cursor()
+
+    cur.execute(
+        """
+        SELECT opp_id,
+               title,
+               description,
+               opp_image_url,
+               category,
+               start_date,
+               end_date,
+               opp.org_id,
+               org.org_name
+        FROM opportunities AS opp,
+             organizations AS org
+        WHERE opp_id = %s
+          AND opp.org_id = org.org_id
+        """,
+        (opp_id,),
+    )
+    row = cur.fetchone()
+
+    cur.close()
+    put_conn(conn)
+
+    return row
