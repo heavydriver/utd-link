@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <!-- navbar -->
+    {% include "navbar.html" %}
+
+    <main class="flex flex-col flex-grow self-center mt-12 mb-16 px-6 w-full max-w-5xl">
+        <!-- Page Header -->
+        <h1 class="font-bold text-3xl text-gray-800 mb-6">
+            About UTD Link
+        </h1>
+
+        <!-- Intro Section -->
+        <section class="bg-white shadow-md border border-gray-200 rounded-xl p-6 mb-8">
+            <div class="flex flex-col md:flex-row gap-5">
+                <div class="flex-1">
+                    <p class="text-gray-700 leading-relaxed text-md">
+                        UTD Link is a platform designed to bring all academic, professional, and
+                        campus opportunities into one easy-to-access place. Students often miss out
+                        on events, internships, research openings, and volunteer programs simply
+                        because information is scattered across emails, flyers, and department pages.
+                        Our goal is to fix that by creating a single hub that connects students,
+                        organizations, and faculty.
+                    </p>
+                </div>
+
+                <!-- image placeholder -->
+                <img
+                    class="w-full md:w-56 h-40 object-cover rounded-lg shadow"
+                    src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d"
+                    alt="students working"
+                />
+            </div>
+        </section>
+
+        <!-- Mission Section -->
+        <section class="bg-white shadow-md border border-gray-200 rounded-xl p-6 mb-8">
+            <div class="flex flex-col md:flex-row gap-5">
+                <!-- image placeholder -->
+                <img
+                    class="w-full md:w-56 h-40 object-cover rounded-lg shadow"
+                    src="https://images.unsplash.com/photo-1503676260728-1c00da094a0b"
+                    alt="mission image"
+                />
+
+                <div class="flex-1">
+                    <h2 class="font-semibold text-xl text-gray-800 mb-3">Our Mission</h2>
+                    <p class="text-gray-700 leading-relaxed text-md">
+                        We want to improve student engagement at UTD by making opportunities easy to
+                        find and easy to participate in. Whether you're looking for an internship,
+                        a research project, a student organization event, or an on-campus job, UTD
+                        Link gives you the tools to explore, filter, and register effortlessly.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Why We Built This -->
+        <section class="bg-white shadow-md border border-gray-200 rounded-xl p-6 mb-8">
+            <h2 class="font-semibold text-xl text-gray-800 mb-3">Why UTD Link?</h2>
+
+            <!-- picture row -->
+            <div class="grid md:grid-cols-3 gap-3 mb-4">
+                <img class="h-32 w-full object-cover rounded-md shadow"
+                     src="https://images.unsplash.com/photo-1531482615713-2afd69097998"
+                     alt="organized data">
+
+                <img class="h-32 w-full object-cover rounded-md shadow"
+                     src="https://images.unsplash.com/photo-1551434678-e076c223a692"
+                     alt="students collaborating">
+
+                <img class="h-32 w-full object-cover rounded-md shadow"
+                     src="https://images.unsplash.com/photo-1519389950473-47ba0277781c"
+                     alt="database systems">
+            </div>
+
+            <ul class="list-disc ml-5 text-gray-700 leading-relaxed text-md space-y-1">
+                <li>Opportunities are currently scattered across different platforms.</li>
+                <li>Students often miss deadlines or events due to poor visibility.</li>
+                <li>Excel sheets and emails cannot handle complex relationships or large datasets.</li>
+                <li>Faculty and organizations need a simple way to manage postings and track participation.</li>
+            </ul>
+
+            <p class="mt-3 text-gray-700 leading-relaxed text-md">
+                A centralized relational database makes it easier to keep information organized,
+                accurate, and scalable as more users and opportunities join the system.
+            </p>
+        </section>
+
+        <!-- Target Users -->
+        <section class="bg-white shadow-md border border-gray-200 rounded-xl p-6 mb-8">
+            <h2 class="font-semibold text-xl text-gray-800 mb-3">Who Is UTD Link For?</h2>
+            <p class="text-gray-700 leading-relaxed text-md">
+                UTD Link is built for everyone in the campus community:
+            </p>
+
+            <div class="grid md:grid-cols-2 gap-4 mt-4">
+                <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 flex flex-col gap-3">
+                    <img
+                        class="h-28 w-full object-cover rounded-md"
+                        src="https://images.unsplash.com/photo-1522071820081-009f0129c71c"
+                        alt="students"
+                    />
+                    <div>
+                        <h3 class="font-semibold text-md text-gray-800 mb-1">Students</h3>
+                        <p class="text-gray-700 text-sm">
+                            Browse, filter, and sign up for internships, research, events, and more.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 flex flex-col gap-3">
+                    <img
+                        class="h-28 w-full object-cover rounded-md"
+                        src="https://images.unsplash.com/photo-1596495577886-d920f1fb7238"
+                        alt="faculty"
+                    />
+                    <div>
+                        <h3 class="font-semibold text-md text-gray-800 mb-1">Faculty & Organizers</h3>
+                        <p class="text-gray-700 text-sm">
+                            Post opportunities, track student participation, and manage event details.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+{% endblock %}

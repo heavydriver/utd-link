@@ -26,7 +26,8 @@ def index():
 
 @app.route("/about")
 def about():
-    return "About Page"
+    return render_template("AboutUs.html")
+
 
 
 @app.route("/privacy")
