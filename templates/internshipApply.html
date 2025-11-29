@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block content %}
+    {% include "navbar.html" %}
+
+    <main class="flex-grow self-center mt-10 mb-12 px-5 w-full max-w-3xl">
+        <h2 class="font-bold text-2xl mb-6">Internship Application</h2>
+
+        <form method="POST" enctype="multipart/form-data"
+              class="bg-white shadow-sm p-6 border border-gray-200 rounded-lg space-y-4">
+          
+
+            <!-- Name -->
+            <div>
+                <label class="block font-medium mb-1">Full Name</label>
+                <input type="text" name="name" required
+                       class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-utdOrange/50">
+            </div>
+
+            <!-- UTD Email -->
+            <div>
+                <label class="block font-medium mb-1">UTD Email</label>
+                <input type="email" name="email" required
+                       class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-utdOrange/50">
+            </div>
+
+            <!-- NetID -->
+            <div>
+                <label class="block font-medium mb-1">UTD NetID</label>
+                <input type="text" name="netid" required
+                       class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-utdOrange/50">
+            </div>
+
+            <!-- Resume -->
+            <div>
+                <label class="block font-medium mb-1">Resume (PDF)</label>
+                <input type="file" name="resume" accept="application/pdf" required
+                       class="w-full p-2 border border-gray-300 rounded-lg">
+            </div>
+
+            <button
+                type="submit"
+                class="px-4 py-2 bg-utdOrange text-white rounded-lg hover:bg-orange-500 transition">
+                Submit Application
+            </button>
+        </form>
+    </main>
+{% endblock %}
