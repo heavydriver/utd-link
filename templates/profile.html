@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <!-- navbar -->
+    {% include "partials/navbar.html" %}
+
+    <!-- main content -->
+    <main class="flex-grow self-center mt-10 mb-12 px-5 w-full max-w-4xl">
+        <!-- header -->
+        <div class="flex flex-wrap justify-between items-center gap-3 mb-6">
+            <h2 class="font-bold text-2xl">Profile</h2>
+        </div>
+
+        <div class="bg-white rounded-2xl border-2 border-utdOrange/50 shadow-lg p-3 sm:p-6 flex flex-col gap-10 max-w-2xl mx-auto">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div>
+                    <h1 class="text-2xl font-semibold">{{ user.first_name }} {{ user.last_name }}</h1>
+                    <p class="text-sm text-gray-600 mt-1">Email: {{ user.email }}</p>
+                    <p class="text-sm text-gray-600">Net ID: {{ user.utd_net_id }}</p>
+                </div>
+
+                <div class="px-3 py-1 text-md text-gray-800 font-medium bg-utdOrange/70 rounded-full w-fit">{{ user.role | title }}</div>
+            </div>
+        </div>
+    </main>
+{% endblock content %}

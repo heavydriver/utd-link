@@ -6,6 +6,7 @@ from flask import Flask, request, render_template, flash, session, redirect, url
 from db.queries import (
     get_user_by_email,
     get_user_by_net_id,
+    get_user_by_id,
     create_new_user,
     get_all_current_opportunities,
     get_opportunity_details,
@@ -144,7 +145,10 @@ def logout():
 @app.route("/profile", methods=["GET"])
 @login_required
 def profile():
-    return "Profile Page"
+    user_id = session.get("user_id")
+    user = get_user_by_id(user_id)
+
+    return render_template("profile.html", user=user)
 
 
 @app.route("/dashboard", methods=["GET"])

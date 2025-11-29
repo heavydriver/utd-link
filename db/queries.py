@@ -29,6 +29,19 @@ def get_user_by_net_id(net_id: str):
     return row
 
 
+def get_user_by_id(user_id: str):
+    conn = get_conn()
+    cur = conn.cursor()
+
+    cur.execute("SELECT * FROM users WHERE user_id = %s", (user_id,))
+    row = cur.fetchone()
+
+    cur.close()
+    put_conn(conn)
+
+    return row
+
+
 def create_new_user(first_name, last_name, net_id, email, password, role):
     conn = get_conn()
     cur = conn.cursor()
