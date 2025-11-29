@@ -24,7 +24,7 @@
                 <span class="bg-orange-200 px-2 py-1 rounded-2xl text-gray-800 text-xs truncate text-center">{{ org.org_type | title }}</span>
 
                 <div class="flex gap-2 mt-4">
-                    <a href="/org/{{ org.org_id }}/manage"
+                    <a href="{{ url_for("organization_manage", org_id=org.org_id) }}"
                        class="flex-1 px-3 py-2 rounded-lg text-center bg-gray-100 hover:bg-gray-300 transition-colors">
                         Manage
                     </a>

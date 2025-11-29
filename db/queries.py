@@ -104,7 +104,14 @@ def get_org_details(org_id: int):
 
     cur.execute(
         """
-        SELECT org_name, org_type, org_image_url, org_email, u.first_name, u.last_name, u.email AS org_rep_email
+        SELECT org_id,
+               org_name,
+               org_type,
+               org_image_url,
+               org_email,
+               u.first_name,
+               u.last_name,
+               u.email AS org_rep_email
         FROM organizations AS org,
              users AS u
         WHERE org_id = %s

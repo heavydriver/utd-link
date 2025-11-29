@@ -1,0 +1,49 @@
+<div class="flex justify-end mb-3">
+    <a href="{{ url_for("opportunity_create", org_id=org_id) }}"
+       class="flex items-center gap-2 px-4 py-2 bg-utdOrange text-white font-semibold rounded-lg hover:bg-utdOrange/90">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+             class="lucide lucide-circle-plus-icon lucide-circle-plus">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M8 12h8"/>
+            <path d="M12 8v8"/>
+        </svg>
+        <span>Add Opportunity</span>
+    </a>
+</div>
+
+{% if org_opps %}
+    <div id="opportunities" class="gap-6 grid sm:grid-cols-2 lg:grid-cols-3">
+        {% for opp in org_opps %}
+            <div
+                    class="bg-white shadow-md hover:shadow-lg border border-gray-100 rounded-xl overflow-hidden transition duration-300 opportunity-card"
+                    data-category="{{ opp.category.replace("_", " ").title() }}"
+                    data-start-date="{{ opp.start_date }}"
+                    data-title="{{ opp.title }}"
+                    data-org="{{ opp.org_name }}">
+                <!-- image -->
+                <img src="{{ opp.opp_image_url }}" alt="{{ opp.title }}"
+                     class="w-full object-cover aspect-video"/>
+
+                <div class="p-4">
+                    <!-- title -->
+                    <a href="{{ url_for("opportunity_details", opp_id=opp.opp_id) }}">
+                        <h3
+                                class="font-semibold text-gray-800 text-lg truncate hover:underline hover:text-gray-900 transition-colors">
+                            {{ opp.title }}</h3>
+                    </a>
+
+                    <div class="flex justify-between items-center mt-1">
+                        <!-- category -->
+                        <div class="max-w-2/5">
+                            <p class="bg-orange-200 px-3 py-2 rounded-2xl text-gray-800 text-xs truncate text-center">{{ opp.category.replace("_", " ").title() }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <h3 class="font-lg text-gray-700">Your organization, currently, does not have any open
+        opportunities</h3>
+{% endif %}

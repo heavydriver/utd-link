@@ -238,7 +238,6 @@ def opportunity_details(opp_id: int):
 def organization_details(org_id: int):
     org_details = get_org_details(org_id)
     org_opportunities = get_all_current_opportunities_for_org(org_id)
-    print(org_details)
 
     return render_template(
         "organizationDetails.html", org_details=org_details, org_opps=org_opportunities
@@ -301,6 +300,96 @@ def organization_create():
         return response
 
     return render_template("createOrganization.html")
+
+
+# also check if the org belongs to this user
+@app.route("/organization/manage/<int:org_id>", methods=["GET"])
+@login_required
+def organization_manage(org_id: int):
+    org_details = get_org_details(org_id)
+
+    return render_template("organizationManage.html", org_details=org_details)
+
+
+@app.route("/organization/manage/<int:org_id>/opportunities", methods=["GET"])
+@login_required
+def organization_manage_opportunities(org_id: int):
+    org_opportunities = get_all_current_opportunities_for_org(org_id)
+
+    return render_template(
+        "partials/org_manage_opportunities.html",
+        org_opps=org_opportunities,
+        org_id=org_id,
+    )
+
+
+@app.route("/organization/manage/<int:org_id>/signups", methods=["GET"])
+@login_required
+def organization_manage_signups(org_id: int):
+    return "Hello"
+
+
+@app.route("/organization/manage/<int:org_id>/add-opportunity", methods=["GET", "POST"])
+@login_required
+def opportunity_create(org_id: int):
+    if request.method == "POST":
+        print(request.form)
+
+        opp_title = request.form["tile"].strip()
+        opp_description = request.form["description"].strip()
+        opp_start_date = request.form["startDate"].strip()
+        opp_end_date = request.form["endDate"].strip()
+        opp_max_signups = request.form["maxSignups"].strip()
+
+        opp_image = None
+        opp_image_url = ""
+
+        # validate user input
+        errors = []
+
+        if not validate_not_empty(
+                opp_title, opp_description, opp_start_date, opp_end_date, opp_max_signups
+        ):
+            errors.append("Please enter data in all fields")
+
+        # check if description is provided (<p><br></p>)
+
+        # check is the star_date and end_date are valid
+
+        if "flyer" in request.files and request.files["flyer"].filename == "":
+            errors.append("Please provide an image for the organization")
+
+        if errors:
+            for e in errors:
+                flash(e)
+
+            return render_template("partials/errorMessages.html")
+
+        # check if opportunity already exists
+
+        if "flyer" in request.files:
+            opp_image = request.files["flyer"]
+            try:
+                opp_image_url = upload_image(opp_image)
+            except Exception as e:
+                flash("Error in image upload, try again")
+                return render_template("partials/errorMessages.html")
+
+        # create the new opportunity
+
+        response = make_response("")
+        response.headers["HX-Trigger"] = json.dumps(
+            {
+                "showToast": {
+                    "message": "Opportunity created successfully",
+                    "type": "success",
+                }
+            }
+        )
+        response.headers["HX-Redirect"] = url_for("organization_manage")
+        return response
+
+    return render_template("addOpportunity.html", org_id=org_id)
 
 
 @app.route("/signup/<int:signup_id>/delete", methods=["POST"])

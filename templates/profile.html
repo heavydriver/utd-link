@@ -90,13 +90,13 @@
                             <path d="M8 11h.01"/>
                             <path d="M8 16h.01"/>
                         </svg>
-                        <span>Signups</span>
+                        <span>Your Signups</span>
                     </a>
                 </li>
 
                 <!-- organizations tab -->
                 <li class="me-2">
-                    <a hx-get="{{ url_for("profile_orgs") }}"
+                    <a hx-get="{{ url_for("profile_orgs") }}" hx-trigger="click"
                        hx-target="#tab-content"
                        hx-swap="innerHTML"
                        class="tab-btn flex items-center gap-2 text-gray-700 inline-flex items-center justify-center p-4 border-b border-transparent rounded-t-base hover:cursor-pointer"
@@ -110,7 +110,7 @@
                             <path d="M5 16v-3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3"/>
                             <path d="M12 12V8"/>
                         </svg>
-                        <span>Organizations</span>
+                        <span>Your Organizations</span>
                     </a>
                 </li>
             </ul>

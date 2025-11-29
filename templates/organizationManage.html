@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            // highlight active tab
+            document.querySelectorAll(".tab-btn").forEach(btn => {
+                btn.addEventListener("click", () => {
+                    document.querySelectorAll(".tab-btn").forEach(b => {
+                        b.classList.remove("text-utdOrange", "border-utdOrange", "border-b-2")
+                        b.classList.add("hover:text-utdOrange", "hover:border-utdOrange")
+                    })
+
+                    btn.classList.add("text-utdOrange", "border-utdOrange", "border-b-2")
+                    btn.classList.remove("hover:text-utdOrange", "hover:border-utdOrange")
+                })
+            })
+        })
+    </script>
+
+    <!-- navbar -->
+    {% include "partials/navbar.html" %}
+
+    <!-- main content -->
+    <main class="flex-grow mt-10 mb-20 px-5 w-full max-w-3xl lg:max-w-5xl mx-auto space-y-5">
+        {% if org_details %}
+            <div class="bg-white rounded-2xl shadow-lg p-5 md:p-10 flex flex-col md:flex-row gap-10">
+                <!-- image -->
+                <div class="w-full md:w-1/2">
+                    <img
+                            src="{{ org_details.org_image_url }}"
+                            alt="{{ org_details.org_name }}"
+                            class="rounded-xl object-cover w-full h-54 md:max-h-100 shadow"
+                    />
+                </div>
+
+                <!-- right side content -->
+                <div class="flex flex-col flex-1 space-y-6">
+                    <div class="space-y-2">
+                        <!-- name -->
+                        <h1 class="text-4xl text-gray-900/90 font-bold">{{ org_details.org_name }}</h1>
+
+                        <!-- org type -->
+                        <span class="px-3 py-1 rounded-full bg-orange-200 text-gray-800 text-sm font-semibold">
+                        {{ org_details.org_type | title }}
+                    </span>
+                    </div>
+
+                    <div class="space-y-3">
+                        <!-- org contact -->
+                        <div>
+                            <a
+                                    href="mailto:{{ org_details.org_email }}"
+                                    class="text-gray-600 hover:text-gray-800 font-medium"
+                            >
+                                Contact: {{ org_details.org_email }}
+                            </a>
+                        </div>
+
+                        <!-- representative -->
+                        <div>
+                            <a
+                                    href="mailto:{{ org_details.org_rep_email }}"
+                                    class="text-gray-600 hover:text-gray-800 font-sm"
+                            >
+                                Managed by: {{ org_details.first_name }} {{ org_details.last_name }}
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- tabs selection -->
+            <div class="border-b border-gray-500 mt-10">
+                <ul class="flex flex-wrap -mb-px text-sm font-medium text-center text-body">
+                    <!-- opportunities tab -->
+                    <li class="me-2">
+                        <a hx-get="{{ url_for("organization_manage_opportunities", org_id=org_details.org_id) }}"
+                           hx-target="#tab-content"
+                           hx-swap="innerHTML"
+                           class="tab-btn flex items-center gap-2 text-gray-700 inline-flex items-center justify-center p-4 border-b border-transparent rounded-t-base hover:cursor-pointer"
+                           id="tab-orgs">
+                            <span>Opportunities</span>
+                        </a>
+                    </li>
+
+                    <!-- signups tab -->
+                    <li class="me-2">
+                        <a hx-get="{{ url_for("organization_manage_signups", org_id=org_details.org_id) }}"
+                           hx-trigger="click"
+                           hx-target="#tab-content"
+                           hx-swap="innerHTML"
+                           class="tab-btn flex items-center gap-2 text-gray-700 inline-flex items-center justify-center p-4 border-b border-transparent rounded-t-base hover:cursor-pointer"
+                           id="tab-signups">
+                            <span>Signups</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- default signup tab content -->
+            <div id="tab-content">
+            </div>
+        {% else %}
+            <h3 class="font-lg text-gray-700 mt-10">This organization does not exist</h3>
+        {% endif %}
+    </main>
+
+    <!-- footer -->
+    {% include "partials/footer.html" %}
+{% endblock content %}
