@@ -25,6 +25,8 @@ from db.queries import (
     get_org_by_name,
     create_new_org,
     get_org_details,
+    get_all_current_opportunities_for_org,
+    delete_user_signup,
 )
 from utils.auth import compare_password, hash_password, login_required
 from utils.image_uploader import upload_image
@@ -40,6 +42,11 @@ load_dotenv()
 
 app = Flask(__name__, template_folder="templates")
 app.secret_key = os.getenv("SECRET_KEY")
+
+
+@app.before_request
+def debug_request():
+    print(request.method, request.path)
 
 
 @app.route("/")
@@ -230,8 +237,12 @@ def opportunity_details(opp_id: int):
 @login_required
 def organization_details(org_id: int):
     org_details = get_org_details(org_id)
+    org_opportunities = get_all_current_opportunities_for_org(org_id)
+    print(org_details)
 
-    return f"Organization {org_id} details page"
+    return render_template(
+        "organizationDetails.html", org_details=org_details, org_opps=org_opportunities
+    )
 
 
 @app.route("/organization/create", methods=["GET", "POST"])
@@ -290,6 +301,17 @@ def organization_create():
         return response
 
     return render_template("createOrganization.html")
+
+
+@app.route("/signup/<int:signup_id>/delete", methods=["POST"])
+@login_required
+def signup_delete(signup_id: int):
+    user_id = session["user_id"]
+
+    print(signup_id)
+
+    delete_user_signup(signup_id, user_id)
+    return ""
 
 
 if __name__ == "__main__":
