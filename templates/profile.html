@@ -1,16 +1,63 @@
 {% extends "base.html" %}
 
 {% block content %}
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const params = new URLSearchParams(window.location.search)
+            const tab = params.get("tab") || "signups"
+
+            if (tab === "orgs") {
+                document.getElementById("tab-orgs").classList.add("text-utdOrange", "border-utdOrange", "border-b-2")
+                document.getElementById("tab-orgs").classList.remove("hover:text-utdOrange", "hover:border-utdOrange")
+
+                fetch("{{ url_for("profile_orgs") }}")
+                    .then(response => response.text())
+                    .then(htmlContent => {
+                        document.getElementById("tab-content").innerHTML = htmlContent;
+                    })
+                    .catch(error => {
+                        console.error('Error fetching data:', error);
+                    });
+            } else if (tab === "signups") {
+                document.getElementById("tab-signups").classList.add("text-utdOrange", "border-utdOrange", "border-b-2")
+                document.getElementById("tab-signups").classList.remove("hover:text-utdOrange", "hover:border-utdOrange")
+
+                fetch("{{ url_for("profile_signups") }}")
+                    .then(response => response.text())
+                    .then(htmlContent => {
+                        document.getElementById("tab-content").innerHTML = htmlContent;
+                    })
+                    .catch(error => {
+                        console.error('Error fetching data:', error);
+                    });
+            }
+
+            // highlight active tab
+            document.querySelectorAll(".tab-btn").forEach(btn => {
+                btn.addEventListener("click", () => {
+                    document.querySelectorAll(".tab-btn").forEach(b => {
+                        b.classList.remove("text-utdOrange", "border-utdOrange", "border-b-2")
+                        b.classList.add("hover:text-utdOrange", "hover:border-utdOrange")
+                    })
+
+                    btn.classList.add("text-utdOrange", "border-utdOrange", "border-b-2")
+                    btn.classList.remove("hover:text-utdOrange", "hover:border-utdOrange")
+                })
+            })
+        })
+    </script>
+
     <!-- navbar -->
     {% include "partials/navbar.html" %}
 
     <!-- main content -->
-    <main class="flex-grow self-center mt-10 mb-12 px-5 w-full max-w-4xl">
+    <main class="flex-grow self-center mt-10 mb-12 px-5 w-full max-w-4xl space-y-6">
         <!-- header -->
-        <div class="flex flex-wrap justify-between items-center gap-3 mb-6">
+        <div class="flex flex-wrap justify-between items-center gap-3">
             <h2 class="font-bold text-2xl">Profile</h2>
         </div>
 
+        <!-- profile card -->
         <div class="bg-white rounded-2xl border-2 border-utdOrange/50 shadow-lg p-3 sm:p-6 flex flex-col gap-10 max-w-2xl mx-auto">
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
@@ -21,6 +68,56 @@
 
                 <div class="px-3 py-1 text-md text-gray-800 font-medium bg-utdOrange/70 rounded-full w-fit">{{ user.role | title }}</div>
             </div>
+        </div>
+
+        <!-- tabs selection -->
+        <div class="border-b border-gray-500 mt-10">
+            <ul class="flex flex-wrap -mb-px text-sm font-medium text-center text-body">
+                <!-- signups tab -->
+                <li class="me-2">
+                    <a hx-get="{{ url_for("profile_signups") }}"
+                       hx-target="#tab-content"
+                       hx-swap="innerHTML"
+                       class="tab-btn flex items-center gap-2 text-gray-700 inline-flex items-center justify-center p-4 border-b border-transparent rounded-t-base hover:cursor-pointer"
+                       id="tab-signups">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none"
+                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                             class="lucide lucide-clipboard-list-icon lucide-clipboard-list">
+                            <rect width="8" height="4" x="8" y="2" rx="1" ry="1"/>
+                            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
+                            <path d="M12 11h4"/>
+                            <path d="M12 16h4"/>
+                            <path d="M8 11h.01"/>
+                            <path d="M8 16h.01"/>
+                        </svg>
+                        <span>Signups</span>
+                    </a>
+                </li>
+
+                <!-- organizations tab -->
+                <li class="me-2">
+                    <a hx-get="{{ url_for("profile_orgs") }}"
+                       hx-target="#tab-content"
+                       hx-swap="innerHTML"
+                       class="tab-btn flex items-center gap-2 text-gray-700 inline-flex items-center justify-center p-4 border-b border-transparent rounded-t-base hover:cursor-pointer"
+                       id="tab-orgs">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none"
+                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                             class="lucide lucide-network-icon lucide-network">
+                            <rect x="16" y="16" width="6" height="6" rx="1"/>
+                            <rect x="2" y="16" width="6" height="6" rx="1"/>
+                            <rect x="9" y="2" width="6" height="6" rx="1"/>
+                            <path d="M5 16v-3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3"/>
+                            <path d="M12 12V8"/>
+                        </svg>
+                        <span>Organizations</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- default signup tab content -->
+        <div id="tab-content">
         </div>
     </main>
 {% endblock content %}

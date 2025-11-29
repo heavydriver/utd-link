@@ -103,21 +103,28 @@
                             data-start-date="{{ opp.start_date }}"
                             data-title="{{ opp.title }}"
                             data-org="{{ opp.org_name }}">
+                        <!-- image -->
                         <img src="{{ opp.opp_image_url }}" alt="{{ opp.title }}"
                              class="w-full object-cover aspect-video"/>
+
                         <div class="p-4">
+                            <!-- title -->
                             <a href="{{ url_for("opportunity_details", opp_id=opp.opp_id) }}">
                                 <h3
                                         class="font-semibold text-gray-800 text-lg truncate hover:underline hover:text-gray-900 transition-colors">
                                     {{ opp.title }}</h3>
                             </a>
+
                             <div class="flex justify-between items-center mt-1">
+                                <!-- org name -->
                                 <a href="{{ url_for("organization_details", org_id=opp.org_id) }}"
                                    class="truncate max-w-3/5">
                                     <p
                                             class="text-gray-700 text-sm truncate hover:underline hover:text-gray-900 transition-colors pr-4">
                                         {{ opp.org_name }}</p>
                                 </a>
+
+                                <!-- category -->
                                 <div class="max-w-2/5">
                                     <p class="bg-orange-200 px-3 py-2 rounded-2xl text-gray-800 text-xs truncate text-center">{{ opp.category.replace("_", " ").title() }}</p>
                                 </div>

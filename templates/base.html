@@ -4,6 +4,10 @@
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.8/dist/htmx.min.js"
+            integrity="sha384-/TgkGk7p307TH7EXJDuUlgG3Ce1UVolAOFopFekQkkXihi5u/6OCvVKyz1W+idaz"
+            crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com"/>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
     <link
@@ -23,6 +27,68 @@
     <title>UTDLink</title>
 </head>
 <body class="flex flex-col bg-gray-50 min-h-screen">
+<script>
+    document.body.addEventListener("htmx:beforeOnLoad", (evt) => {
+        const triggers = evt.detail.xhr.getResponseHeader("HX-Trigger")
+        if (!triggers) return
+
+        const parsed = JSON.parse(triggers)
+        if (parsed.showToast) {
+            localStorage.setItem("flash_toast", JSON.stringify(parsed.showToast))
+        }
+    })
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const toast = localStorage.getItem("flash_toast")
+        if (toast) {
+            const data = JSON.parse(toast)
+            document.body.dispatchEvent(
+                new CustomEvent("show-toast", {detail: data})
+            )
+            localStorage.removeItem("flash_toast")
+        }
+    })
+
+    document.body.addEventListener('show-toast', function (event) {
+        const toastData = event.detail
+        if (!toastData) return
+
+        const t = document.createElement('div')
+        t.textContent = toastData.message
+
+        t.className = `
+                fixed top-4 left-1/2 -translate-x-1/2
+                p-3 rounded-lg shadow-lg max-w-md text-sm text-wrap
+                opacity-0 -translate-y-3
+                transition-all duration-300
+            `
+
+        // Colors
+        if (toastData.type === "success") {
+            t.classList.add("bg-white", "text-green-600", "border", "border-green-600")
+        } else if (toastData.type === "error") {
+            t.classList.add("bg-red-200", "border", "border-red-600", "text-red-700")
+        } else {
+            t.classList.add("bg-amber-100/70", "border", "border-amber-600", "text-amber-600")
+        }
+
+        document.body.appendChild(t)
+
+        // Fade-in
+        setTimeout(() => {
+            t.classList.remove("opacity-0", "-translate-y-3")
+            t.classList.add("opacity-100", "translate-y-0")
+        }, 500)
+
+        // Fade-out
+        setTimeout(() => {
+            t.classList.remove("opacity-100", "translate-y-0")
+            t.classList.add("opacity-0", "-translate-y-3")
+
+            setTimeout(() => t.remove(), 300)
+        }, 3500)
+    })
+</script>
 {% block content %}{% endblock %}
 </body>
 </html>

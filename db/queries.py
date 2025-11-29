@@ -29,19 +29,6 @@ def get_user_by_net_id(net_id: str):
     return row
 
 
-def get_user_by_id(user_id: str):
-    conn = get_conn()
-    cur = conn.cursor()
-
-    cur.execute("SELECT * FROM users WHERE user_id = %s", (user_id,))
-    row = cur.fetchone()
-
-    cur.close()
-    put_conn(conn)
-
-    return row
-
-
 def create_new_user(first_name, last_name, net_id, email, password, role):
     conn = get_conn()
     cur = conn.cursor()
@@ -64,6 +51,49 @@ def create_new_user(first_name, last_name, net_id, email, password, role):
     put_conn(conn)
 
     return new_user_id
+
+
+def get_user_by_id(user_id: str):
+    conn = get_conn()
+    cur = conn.cursor()
+
+    cur.execute("SELECT * FROM users WHERE user_id = %s", (user_id,))
+    row = cur.fetchone()
+
+    cur.close()
+    put_conn(conn)
+
+    return row
+
+
+def get_user_signups(user_id: str):
+    conn = get_conn()
+    cur = conn.cursor()
+
+    cur.execute(
+        """
+        SELECT signup_id,
+               opp.opp_id,
+               title,
+               category,
+               start_date,
+               end_date,
+               signup_date,
+               status
+        FROM signup AS sup,
+             opportunities AS opp
+        WHERE user_id = %s
+          AND sup.opp_id = opp.opp_id
+        ORDER BY signup_date DESC
+        """,
+        (user_id,),
+    )
+    rows = cur.fetchall()
+
+    cur.close()
+    put_conn(conn)
+
+    return rows
 
 
 def get_all_current_opportunities():
@@ -100,6 +130,65 @@ def get_all_current_opportunities():
     put_conn(conn)
 
     return rows
+
+
+def get_all_user_orgs(user_id: str):
+    conn = get_conn()
+    cur = conn.cursor()
+
+    cur.execute("SELECT * FROM organizations WHERE org_rep_id = %s", (user_id,))
+    rows = cur.fetchall()
+
+    cur.close()
+    put_conn(conn)
+
+    return rows
+
+
+def get_org_by_name(org_name: str):
+    conn = get_conn()
+    cur = conn.cursor()
+
+    cur.execute("SELECT * FROM organizations WHERE org_name = %s", (org_name,))
+    row = cur.fetchone()
+
+    cur.close()
+    put_conn(conn)
+
+    return row
+
+
+def get_org_details(org_id: int):
+    conn = get_conn()
+    cur = conn.cursor()
+
+    cur.execute("SELECT * FROM organizations WHERE org_id = %s", (org_id,))
+    row = cur.fetchone()
+
+    cur.close()
+    put_conn(conn)
+
+    return row
+
+
+def create_new_org(org_name, org_type, org_email, org_image_url, user_id):
+    conn = get_conn()
+    cur = conn.cursor()
+
+    if len(org_image_url) > 0:
+        cur.execute(
+            "INSERT INTO organizations (org_name, org_type, org_email, org_image_url, org_rep_id) VALUES (%s, %s, %s, %s, %s)",
+            (org_name, org_type, org_email, org_image_url, user_id),
+        )
+    else:
+        cur.execute(
+            "INSERT INTO organizations (org_name, org_type, org_email, org_rep_id) VALUES (%s, %s, %s, %s)",
+            (org_name, org_type, org_email, user_id),
+        )
+    conn.commit()
+
+    cur.close()
+    put_conn(conn)
 
 
 def get_opportunity_details(opp_id: int):
