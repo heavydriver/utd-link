@@ -146,6 +146,45 @@ def create_new_org(org_name, org_type, org_email, org_image_url, user_id):
     put_conn(conn)
 
 
+def update_org(org_name, org_type, org_email, org_image_url, org_id):
+    conn = get_conn()
+    cur = conn.cursor()
+
+    cur.execute(
+        """
+        UPDATE organizations
+        SET org_name      = %s,
+            org_type      = %s,
+            org_email     = %s,
+            org_image_url = %s
+        WHERE org_id = %s
+        """,
+        (org_name, org_type, org_email, org_image_url, org_id),
+    )
+    conn.commit()
+
+    cur.close()
+    put_conn(conn)
+
+
+def delete_org(org_id):
+    conn = get_conn()
+    cur = conn.cursor()
+
+    cur.execute(
+        """
+        DELETE
+        FROM organizations
+        WHERE org_id = %s
+        """,
+        (org_id,),
+    )
+    conn.commit()
+
+    cur.close()
+    put_conn(conn)
+
+
 def check_is_representative(user_id: int, org_id: int):
     conn = get_conn()
     cur = conn.cursor()

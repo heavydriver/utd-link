@@ -34,6 +34,8 @@ from db.queries import (
     create_new_signup,
     get_signup_count_for_opp,
     get_max_signups,
+    update_org,
+    delete_org,
 )
 from utils.auth import (
     compare_password,
@@ -369,6 +371,169 @@ def organization_create():
         return redirect(url_for("profile", tab="orgs"))
 
     return render_template("createOrganization.html")
+
+
+@app.route("/organization/update/<int:org_id>", methods=["GET", "POST"])
+@login_required
+@is_representative
+def organization_update(org_id: int):
+    org_details = get_org_details(org_id)
+
+    if not org_details:
+        if request.headers.get("HX-Request"):
+            response = make_response("")
+            response.headers["HX-Trigger"] = json.dumps(
+                {
+                    "showToast": {
+                        "message": "That organization does not exist",
+                        "type": "error",
+                        "fromHTMX": True,
+                    }
+                }
+            )
+            return response
+
+        flash("That organization does not exist", "error")
+        return redirect(url_for("profile", tab="orgs"))
+
+    if request.method == "POST":
+        org_name = request.form["name"].strip()
+        org_type = request.form["org_type"].strip()
+        org_email = request.form["org_email"].strip()
+        org_image = None
+        org_image_url = ""
+
+        # validate user input
+        errors = []
+
+        if not validate_not_empty(org_name, org_type, org_email):
+            errors.append("Please enter data in all fields")
+
+        if not validate_email(org_email):
+            errors.append("Please enter a valid email")
+
+        if "org_image" in request.files and request.files["org_image"].filename == "":
+            errors.append("Please provide an image for the organization")
+
+        if errors:
+            for e in errors:
+                flash(e, "error")
+
+            return render_template("partials/flash_messages.html")
+
+        if get_org_by_name(org_name) and org_name != org_details["org_name"]:
+            flash(
+                "An organization with this name already exists, use a different name",
+                "error",
+            )
+            return render_template("partials/flash_messages.html")
+
+        if "org_image" in request.files:
+            org_image = request.files["org_image"]
+            try:
+                org_image_url = upload_image(org_image)
+            except Exception as e:
+                flash("Error in image upload, try again", "error")
+                return render_template("partials/flash_messages.html")
+        else:
+            org_image_url = org_details["org_image_url"]
+
+        if (
+                org_name == org_details["org_name"]
+                and org_type == org_details["org_type"]
+                and org_email == org_details["org_email"]
+                and org_image_url == org_details["org_image_url"]
+        ):
+            flash("You have not made any changes", "warning")
+            return render_template("partials/flash_messages.html")
+
+        update_org(org_name, org_type, org_email, org_image_url, org_id)
+
+        if request.headers.get("HX-Request"):
+            response = make_response("")
+            response.headers["HX-Trigger"] = json.dumps(
+                {
+                    "showToast": {
+                        "message": "Organization updated successfully",
+                        "type": "success",
+                    }
+                }
+            )
+            response.headers["HX-Redirect"] = url_for("profile", tab="orgs")
+            return response
+
+        flash("Organization updated successfully", "success")
+        return redirect(url_for("profile", tab="orgs"))
+
+    return render_template("organization_update.html", org=org_details)
+
+
+@app.route("/organization/delete-confirm/<int:org_id>", methods=["GET"])
+@login_required
+@is_representative
+def organization_delete_confirmation(org_id: int):
+    org_details = get_org_details(org_id)
+
+    if not org_details:
+        if request.headers.get("HX-Request"):
+            response = make_response("")
+            response.headers["HX-Trigger"] = json.dumps(
+                {
+                    "showToast": {
+                        "message": "That organization does not exist",
+                        "type": "error",
+                        "fromHTMX": True,
+                    }
+                }
+            )
+            return response
+
+        flash("That organization does not exist", "error")
+        return redirect(url_for("profile", tab="orgs"))
+
+    return render_template("organization_delete_confirmation.html", org=org_details)
+
+
+@app.delete("/organization/delete/<int:org_id>")
+@login_required
+@is_representative
+def organization_delete(org_id: int):
+    org_details = get_org_details(org_id)
+
+    if not org_details:
+        if request.headers.get("HX-Request"):
+            response = make_response("")
+            response.headers["HX-Trigger"] = json.dumps(
+                {
+                    "showToast": {
+                        "message": "That organization does not exist",
+                        "type": "error",
+                        "fromHTMX": True,
+                    }
+                }
+            )
+            return response
+
+        flash("That organization does not exist", "error")
+        return redirect(url_for("profile", tab="orgs"))
+
+    delete_org(org_id)
+
+    if request.headers.get("HX-Request"):
+        response = make_response("")
+        response.headers["HX-Trigger"] = json.dumps(
+            {
+                "showToast": {
+                    "message": "Organization deleted successfully",
+                    "type": "success",
+                }
+            }
+        )
+        response.headers["HX-Redirect"] = url_for("profile", tab="orgs")
+        return response
+
+    flash("Organization deleted successfully", "success")
+    return redirect(url_for("profile", tab="orgs"))
 
 
 @app.route("/organization/manage/<int:org_id>", methods=["GET"])
