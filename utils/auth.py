@@ -81,8 +81,8 @@ def is_authorized_to_delete_signup(f):
             return redirect(url_for("dashboard"))
 
         if (
-                signup_details["user_id"] != user_id
-                and signup_details["org_rep_id"] != user_id
+            signup_details["user_id"] != user_id
+            and signup_details["org_rep_id"] != user_id
         ):
             if request.headers.get("HX-Request"):
                 response = make_response("")

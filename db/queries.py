@@ -146,6 +146,45 @@ def create_new_org(org_name, org_type, org_email, org_image_url, user_id):
     put_conn(conn)
 
 
+def update_org(org_name, org_type, org_email, org_image_url, org_id):
+    conn = get_conn()
+    cur = conn.cursor()
+
+    cur.execute(
+        """
+        UPDATE organizations
+        SET org_name      = %s,
+            org_type      = %s,
+            org_email     = %s,
+            org_image_url = %s
+        WHERE org_id = %s
+        """,
+        (org_name, org_type, org_email, org_image_url, org_id),
+    )
+    conn.commit()
+
+    cur.close()
+    put_conn(conn)
+
+
+def delete_org(org_id):
+    conn = get_conn()
+    cur = conn.cursor()
+
+    cur.execute(
+        """
+        DELETE
+        FROM organizations
+        WHERE org_id = %s
+        """,
+        (org_id,),
+    )
+    conn.commit()
+
+    cur.close()
+    put_conn(conn)
+
+
 def check_is_representative(user_id: int, org_id: int):
     conn = get_conn()
     cur = conn.cursor()
@@ -216,6 +255,7 @@ def get_all_current_opportunities_for_org(org_id: int):
                category,
                start_date,
                end_date,
+               max_signups,
                opp.org_id,
                org.org_name
         FROM opportunities AS opp,
@@ -252,8 +292,10 @@ def get_opportunity_details(opp_id: int):
                category,
                start_date,
                end_date,
+               max_signups,
                opp.org_id,
-               org.org_name
+               org.org_name,
+               org.org_rep_id
         FROM opportunities AS opp,
              organizations AS org
         WHERE opp_id = %s
@@ -346,6 +388,66 @@ def create_new_opportunity(
                 org_id,
             ),
         )
+    conn.commit()
+
+    cur.close()
+    put_conn(conn)
+
+
+def update_opp(
+        title,
+        opp_image_url,
+        description,
+        category,
+        start_date,
+        end_date,
+        max_signups,
+        opp_id,
+):
+    conn = get_conn()
+    cur = conn.cursor()
+
+    cur.execute(
+        """
+        UPDATE opportunities
+        SET title         = %s,
+            description   = %s,
+            category      = %s,
+            opp_image_url = %s,
+            start_date    = %s,
+            end_date      = %s,
+            max_signups   = %s
+        WHERE opp_id = %s
+        """,
+        (
+            title,
+            description,
+            category,
+            opp_image_url,
+            start_date,
+            end_date,
+            max_signups,
+            opp_id,
+        ),
+    )
+    conn.commit()
+
+    cur.close()
+    put_conn(conn)
+
+
+def delete_opp(opp_id):
+    conn = get_conn()
+    cur = conn.cursor()
+
+    cur.execute(
+        """
+        DELETE
+        FROM opportunities
+        WHERE opp_id = %s
+        """,
+        (opp_id,),
+    )
     conn.commit()
 
     cur.close()
