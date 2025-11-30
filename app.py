@@ -56,7 +56,28 @@ def index():
 
 @app.route("/about")
 def about():
-    return "About Page"
+    return render_template("AboutUs.html")
+
+
+
+@app.route("/internshipApply")
+def apply_internship():
+    return render_template("internshipApply.html")
+
+
+@app.route("/scholarshipApply")
+def apply_scholarship():
+    return render_template("scholarshipApply.html")
+
+
+@app.route("/researchApply")
+def apply_research():
+    return render_template("researchApply.html")
+
+@app.route("/eventApply")
+def apply_event():
+    return render_template("eventApply.html")
+
 
 
 @app.route("/privacy")
