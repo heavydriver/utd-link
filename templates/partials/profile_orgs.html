@@ -1,0 +1,38 @@
+<div class="flex justify-end mb-3">
+    <a href="{{ url_for("organization_create") }}"
+       class="flex items-center gap-2 px-4 py-2 bg-utdOrange text-white font-semibold rounded-lg hover:bg-utdOrange/90">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+             class="lucide lucide-circle-plus-icon lucide-circle-plus">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M8 12h8"/>
+            <path d="M12 8v8"/>
+        </svg>
+        <span>Create Organization</span>
+    </a>
+</div>
+
+{% if organizations %}
+    <div class="gap-6 grid sm:grid-cols-2 lg:grid-cols-3 mt-2">
+    {% for org in organizations %}
+        <div class="bg-white shadow-md hover:shadow-lg border border-gray-100 rounded-xl overflow-hidden transition duration-300">
+            <img src="{{ org.org_image_url }}" alt="{{ org.org_name }}" class="w-full aspect-3/2 object-cover">
+
+            <div class="p-4 space-y-2">
+                <h3 class="font-semibold text-gray-800 text-lg truncate">{{ org.org_name }}</h3>
+
+                <span class="bg-orange-200 px-2 py-1 rounded-2xl text-gray-800 text-xs truncate text-center">{{ org.org_type | title }}</span>
+
+                <div class="flex gap-2 mt-4">
+                    <a href="{{ url_for("organization_manage", org_id=org.org_id) }}"
+                       class="flex-1 px-3 py-2 rounded-lg text-center bg-gray-100 hover:bg-gray-300 transition-colors">
+                        Manage
+                    </a>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+{% else %}
+    <h3 class="font-lg text-gray-700 mt-10">You do not manage any organization</h3>
+{% endif %}
+</div>

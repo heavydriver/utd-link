@@ -12,20 +12,19 @@
             </div>
 
             <!-- error messages -->
-            {% with messages = get_flashed_messages() %}
-                {% if messages %}
-                    <div class="py-3 px-4 bg-red-100 rounded-md border-l-5 border-red-500">
-                        <ul class="space-y-1 text-sm text-gray-800 list-disc list-inside">
-                            {% for m in messages %}
-                                <li>{{ m }}</li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-                {% endif %}
-            {% endwith %}
+            <div id="error-messages" class="transition-all duration-300">
+                {% include "partials/errorMessages.html" %}
+            </div>
 
             <!-- login form -->
-            <form action="{{ url_for("login") }}" method="post" class="group flex flex-col">
+            <form
+                    hx-post="{{ url_for('login') }}"
+                    hx-target="#error-messages"
+                    hx-swap="innerHTML"
+                    hx-disabled-elt="#login-button"
+                    method="post"
+                    class="group flex flex-col"
+            >
                 <label for="email" class="font-semibold text-lg"> Email </label>
                 <input
                         type="email"
@@ -59,11 +58,17 @@
                     </a>
                 </div>
 
-                <button
+                <button id="login-button"
                         type="submit"
-                        class="bg-utdOrange hover:bg-orange-500 hover:shadow-lg mt-6 px-3 py-3 rounded-lg font-semibold text-white text-lg transition hover:-translate-y-0.5 duration-250 ease-in-out hover:cursor-pointer"
-                >
-                    Login
+                        class="group flex justify-center items-center bg-utdOrange hover:bg-orange-500 hover:shadow-lg mt-6 px-3 py-3 rounded-lg font-semibold text-white text-lg transition hover:-translate-y-0.5 duration-250 ease-in-out hover:cursor-pointer group-[.htmx-request]:disabled:opacity-50 group-[.htmx-request]:disabled:cursor-not-allowed">
+                    <svg class="hidden group-[.htmx-request]:block animate-spin mr-2 h-5 w-5 text-gray-200"
+                         xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                         fill="none" stroke="currentColor" stroke-width="2"
+                         stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 12a9 9 0 1 1-6.219-8.56"></path>
+                    </svg>
+
+                    <span class="group-[.htmx-request]:hidden">Login</span>
                 </button>
 
                 <p class="mt-5 text-gray-700 text-sm text-center">

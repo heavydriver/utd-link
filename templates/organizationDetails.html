@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <!-- navbar -->
+    {% include "partials/navbar.html" %}
+
+    <!-- main content -->
+    <main class="flex-grow mt-10 mb-20 px-5 w-full max-w-3xl lg:max-w-5xl mx-auto space-y-5">
+        {% if org_details %}
+            <div class="bg-white rounded-2xl shadow-lg p-5 md:p-10 flex flex-col md:flex-row gap-10">
+                <!-- image -->
+                <div class="w-full md:w-1/2">
+                    <img
+                            src="{{ org_details.org_image_url }}"
+                            alt="{{ org_details.org_name }}"
+                            class="rounded-xl object-cover w-full h-54 md:max-h-100 shadow"
+                    />
+                </div>
+
+                <!-- right side content -->
+                <div class="flex flex-col flex-1 space-y-6">
+                    <div class="space-y-2">
+                        <!-- name -->
+                        <h1 class="text-4xl text-gray-900/90 font-bold">{{ org_details.org_name }}</h1>
+
+                        <!-- org type -->
+                        <span class="px-3 py-1 rounded-full bg-orange-200 text-gray-800 text-sm font-semibold">
+                        {{ org_details.org_type | title }}
+                    </span>
+                    </div>
+
+                    <div class="space-y-3">
+                        <!-- org contact -->
+                        <div>
+                            <a
+                                    href="mailto:{{ org_details.org_email }}"
+                                    class="text-gray-600 hover:text-gray-800 font-medium"
+                            >
+                                Contact: {{ org_details.org_email }}
+                            </a>
+                        </div>
+
+                        <!-- representative -->
+                        <div>
+                            <a
+                                    href="mailto:{{ org_details.org_rep_email }}"
+                                    class="text-gray-600 hover:text-gray-800 font-sm"
+                            >
+                                Managed by: {{ org_details.first_name }} {{ org_details.last_name }}
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <p class="text-xl text-gray-800 font-bold mt-10">Opportunities</p>
+
+            {% if org_opps %}
+                <div id="opportunities" class="gap-6 grid sm:grid-cols-2 lg:grid-cols-3">
+                    {% for opp in org_opps %}
+                        <div
+                                class="bg-white shadow-md hover:shadow-lg border border-gray-100 rounded-xl overflow-hidden transition duration-300 opportunity-card"
+                                data-category="{{ opp.category.replace("_", " ").title() }}"
+                                data-start-date="{{ opp.start_date }}"
+                                data-title="{{ opp.title }}"
+                                data-org="{{ opp.org_name }}">
+                            <!-- image -->
+                            <img src="{{ opp.opp_image_url }}" alt="{{ opp.title }}"
+                                 class="w-full object-cover aspect-video"/>
+
+                            <div class="p-4">
+                                <!-- title -->
+                                <a href="{{ url_for("opportunity_details", opp_id=opp.opp_id) }}">
+                                    <h3
+                                            class="font-semibold text-gray-800 text-lg truncate hover:underline hover:text-gray-900 transition-colors">
+                                        {{ opp.title }}</h3>
+                                </a>
+
+                                <div class="flex justify-between items-center mt-1">
+                                    <!-- category -->
+                                    <div class="max-w-2/5">
+                                        <p class="bg-orange-200 px-3 py-2 rounded-2xl text-gray-800 text-xs truncate text-center">{{ opp.category.replace("_", " ").title() }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <h3 class="font-lg text-gray-700">This organization, currently, does not have any open
+                    opportunities</h3>
+            {% endif %}
+        {% else %}
+            <h3 class="font-lg text-gray-700 mt-10">This organization does not exist</h3>
+        {% endif %}
+    </main>
+
+    <!-- footer -->
+    {% include "partials/footer.html" %}
+{% endblock content %}
