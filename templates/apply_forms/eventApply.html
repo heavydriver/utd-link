@@ -2,7 +2,7 @@
 
 {% block content %}
     <!-- navbar -->
-    {% include "navbar.html" %}
+    {% include "partials/navbar.html" %}
 
     <main class="flex flex-col flex-grow self-center mt-12 mb-16 px-6 w-full max-w-4xl">
         <!-- Header -->
@@ -11,7 +11,7 @@
         <!-- Form Card -->
         <section class="bg-white shadow-md border border-gray-200 rounded-xl p-6">
             <form method="POST" enctype="multipart/form-data" class="space-y-5">
-             
+
 
                 <!-- Name -->
                 <div>
@@ -19,7 +19,7 @@
                     <input type="text"
                            name="name"
                            required
-                           class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-utdOrange/50 focus:outline-none" />
+                           class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-utdOrange/50 focus:outline-none"/>
                 </div>
 
                 <!-- UTD Email -->
@@ -29,7 +29,7 @@
                            name="email"
                            required
                            placeholder="abc123456@utdallas.edu"
-                           class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-utdOrange/50 focus:outline-none" />
+                           class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-utdOrange/50 focus:outline-none"/>
                 </div>
 
                 <!-- UTD Net ID -->
@@ -39,7 +39,7 @@
                            name="netid"
                            required
                            placeholder="abc123456"
-                           class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-utdOrange/50 focus:outline-none" />
+                           class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-utdOrange/50 focus:outline-none"/>
                 </div>
 
                 <!-- Additional Comments -->

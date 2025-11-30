@@ -3,6 +3,27 @@
 {% block content %}
     <script>
         document.addEventListener("DOMContentLoaded", () => {
+            const params = new URLSearchParams(window.location.search)
+            const tab = params.get("tab") || "opps"
+
+            if (tab === "opps") {
+                document.getElementById("tab-opps").classList.add("text-utdOrange", "border-utdOrange", "border-b-2")
+                document.getElementById("tab-opps").classList.remove("hover:text-utdOrange", "hover:border-utdOrange")
+
+                htmx.ajax('GET', "{{ url_for("organization_manage_opportunities", org_id=org_details.org_id) }}", {
+                    target: '#tab-content',
+                    swap: 'innerHTML'
+                })
+            } else if (tab === "signups") {
+                document.getElementById("tab-signups").classList.add("text-utdOrange", "border-utdOrange", "border-b-2")
+                document.getElementById("tab-signups").classList.remove("hover:text-utdOrange", "hover:border-utdOrange")
+                
+                htmx.ajax('GET', "{{ url_for("organization_manage_signups", org_id=org_details.org_id) }}", {
+                    target: '#tab-content',
+                    swap: 'innerHTML'
+                })
+            }
+
             // highlight active tab
             document.querySelectorAll(".tab-btn").forEach(btn => {
                 btn.addEventListener("click", () => {
@@ -78,8 +99,19 @@
                         <a hx-get="{{ url_for("organization_manage_opportunities", org_id=org_details.org_id) }}"
                            hx-target="#tab-content"
                            hx-swap="innerHTML"
-                           class="tab-btn flex items-center gap-2 text-gray-700 inline-flex items-center justify-center p-4 border-b border-transparent rounded-t-base hover:cursor-pointer"
-                           id="tab-orgs">
+                           class="tab-btn flex gap-2 text-gray-700 inline-flex items-center justify-center p-4 border-b border-transparent rounded-t-base hover:cursor-pointer"
+                           id="tab-opps">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24"
+                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                 stroke-linejoin="round"
+                                 class="lucide lucide-chart-no-axes-combined-icon lucide-chart-no-axes-combined">
+                                <path d="M12 16v5"/>
+                                <path d="M16 14v7"/>
+                                <path d="M20 10v11"/>
+                                <path d="m22 3-8.646 8.646a.5.5 0 0 1-.708 0L9.354 8.354a.5.5 0 0 0-.707 0L2 15"/>
+                                <path d="M4 18v3"/>
+                                <path d="M8 14v7"/>
+                            </svg>
                             <span>Opportunities</span>
                         </a>
                     </li>
@@ -90,15 +122,27 @@
                            hx-trigger="click"
                            hx-target="#tab-content"
                            hx-swap="innerHTML"
-                           class="tab-btn flex items-center gap-2 text-gray-700 inline-flex items-center justify-center p-4 border-b border-transparent rounded-t-base hover:cursor-pointer"
+                           class="tab-btn flex gap-2 text-gray-700 inline-flex items-center justify-center p-4 border-b border-transparent rounded-t-base hover:cursor-pointer"
                            id="tab-signups">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24"
+                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                 stroke-linejoin="round" class="lucide lucide-notebook-text-icon lucide-notebook-text">
+                                <path d="M2 6h4"/>
+                                <path d="M2 10h4"/>
+                                <path d="M2 14h4"/>
+                                <path d="M2 18h4"/>
+                                <rect width="16" height="20" x="4" y="2" rx="2"/>
+                                <path d="M9.5 8h5"/>
+                                <path d="M9.5 12H16"/>
+                                <path d="M9.5 16H14"/>
+                            </svg>
                             <span>Signups</span>
                         </a>
                     </li>
                 </ul>
             </div>
 
-            <!-- default signup tab content -->
+            <!-- default opportunity tab content -->
             <div id="tab-content">
             </div>
         {% else %}

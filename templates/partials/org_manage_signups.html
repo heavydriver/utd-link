@@ -1,0 +1,55 @@
+<div class="space-y-6">
+    {% for opp in opportunities %}
+        <div class="p-4 border-2 shadow-md border-gray-200 rounded-lg">
+            <h2 class="text-lg font-semibold mb-2">
+                {{ opp.title }}
+            </h2>
+
+            <p class="text-sm text-gray-600 mb-3">
+                {{ opp.start_date }} {% if opp.end_date %} &mdash;
+                {{ opp.end_date }} {% endif %}
+            </p>
+
+            {% if opp.signups %}
+                <ul class="space-y-2">
+                    {% for s in opp.signups %}
+                        <li class="signup-card flex justify-between items-center p-2 bg-white rounded shadow group">
+                            <div class="overflow-hidden">
+                                <div class="font-medium">
+                                    {{ s.user.first_name }} {{ s.user.last_name }}
+                                </div>
+                                <a href="mailto:{{ s.user.email }}"
+                                   class="text-gray-500 text-sm hover:underline hover:cursor">
+                                    {{ s.user.email }}
+                                </a>
+                            </div>
+
+                            <button
+                                    type="button"
+                                    hx-post="{{ url_for('signup_delete', signup_id=s.signup_id) }}"
+                                    hx-trigger="click"
+                                    hx-target="closest .signup-card"
+                                    hx-swap="outerHTML"
+                                    class="opacity-0 group-hover:opacity-100 hover:cursor-pointer transition text-red-500 hover:text-red-700"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                                     fill="none"
+                                     stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                     stroke-linejoin="round"
+                                     class="lucide lucide-trash2-icon lucide-trash-2">
+                                    <path d="M10 11v6"/>
+                                    <path d="M14 11v6"/>
+                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/>
+                                    <path d="M3 6h18"/>
+                                    <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                                </svg>
+                            </button>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="text-gray-500 italic">No signups yet</p>
+            {% endif %}
+        </div>
+    {% endfor %}
+</div>

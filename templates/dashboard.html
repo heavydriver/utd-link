@@ -53,6 +53,11 @@
 
     <!-- main content -->
     <main class="flex-grow self-center mt-10 mb-12 px-5 w-full max-w-6xl">
+        <!-- flash messages -->
+        <div id="flash-messages" class="transition-all duration-300 mb-5">
+            {% include "partials/flash_messages.html" %}
+        </div>
+
         <!-- header -->
         <div class="flex flex-wrap justify-between items-center gap-3 mb-6">
             <h2 class="font-bold text-2xl">Opportunities</h2>
