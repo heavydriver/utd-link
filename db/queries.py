@@ -292,6 +292,7 @@ def get_opportunity_details(opp_id: int):
                category,
                start_date,
                end_date,
+               max_signups,
                opp.org_id,
                org.org_name,
                org.org_rep_id
@@ -387,6 +388,48 @@ def create_new_opportunity(
                 org_id,
             ),
         )
+    conn.commit()
+
+    cur.close()
+    put_conn(conn)
+
+
+def update_opp(
+        title,
+        opp_image_url,
+        description,
+        category,
+        start_date,
+        end_date,
+        max_signups,
+        opp_id,
+):
+    conn = get_conn()
+    cur = conn.cursor()
+
+    cur.execute(
+        """
+        UPDATE opportunities
+        SET title         = %s,
+            description   = %s,
+            category      = %s,
+            opp_image_url = %s,
+            start_date    = %s,
+            end_date      = %s,
+            max_signups   = %s
+        WHERE opp_id = %s
+        """,
+        (
+            title,
+            description,
+            category,
+            opp_image_url,
+            start_date,
+            end_date,
+            max_signups,
+            opp_id,
+        ),
+    )
     conn.commit()
 
     cur.close()

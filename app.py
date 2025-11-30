@@ -37,6 +37,7 @@ from db.queries import (
     update_org,
     delete_org,
     delete_opp,
+    update_opp,
 )
 from utils.auth import (
     compare_password,
@@ -608,7 +609,7 @@ def organization_manage_signups(org_id: int):
 @is_representative
 def opportunity_create(org_id: int):
     if request.method == "POST":
-        opp_title = request.form["tile"].strip()
+        opp_title = request.form["title"].strip()
         opp_category = request.form["category"].strip()
         opp_description = request.form["description"].strip()
         opp_start_date = request.form["startDate"].strip()
@@ -707,17 +708,23 @@ def opportunity_create(org_id: int):
             org_id,
         )
 
-        response = make_response("")
-        response.headers["HX-Trigger"] = json.dumps(
-            {
-                "showToast": {
-                    "message": "Opportunity created successfully",
-                    "type": "success",
+        if request.headers.get("HX-Request"):
+            response = make_response("")
+            response.headers["HX-Trigger"] = json.dumps(
+                {
+                    "showToast": {
+                        "message": "Opportunity created successfully",
+                        "type": "success",
+                    }
                 }
-            }
-        )
-        response.headers["HX-Redirect"] = url_for("organization_manage", org_id=org_id)
-        return response
+            )
+            response.headers["HX-Redirect"] = url_for(
+                "organization_manage", org_id=org_id
+            )
+            return response
+
+        flash("Opportunity created successfully", "error")
+        return redirect(url_for("organization_manage", org_id=org_id))
 
     return render_template("addOpportunity.html", org_id=org_id)
 
@@ -764,7 +771,141 @@ def opportunity_update(opp_id: int):
         flash("You are not authorized to make this request", "error")
         return redirect(url_for("dashboard"))
 
-    return ""
+    if request.method == "POST":
+        opp_title = request.form["title"].strip()
+        opp_category = request.form["category"].strip()
+        opp_description = request.form["description"].strip()
+        opp_start_date = request.form["startDate"].strip()
+        opp_end_date = request.form["endDate"].strip()
+        opp_max_signups = request.form["maxSignups"].strip()
+
+        opp_image = None
+        opp_image_url = ""
+
+        # validate user input
+        errors = []
+
+        if not validate_not_empty(
+                opp_title, opp_category, opp_description, opp_start_date
+        ):
+            errors.append("Please enter data in all fields")
+
+        if not validate_description(opp_description):
+            errors.append("Please provide a description for the opportunity")
+
+        if not validate_date(opp_start_date):
+            errors.append("Please provide valid Start date")
+
+        if opp_end_date and not validate_date(opp_start_date):
+            errors.append("Please provide valid End date")
+
+        if "flyer" in request.files and request.files["flyer"].filename == "":
+            errors.append("Please provide an image for the opportunity")
+
+        if opp_max_signups and not validate_max_signups(opp_max_signups):
+            errors.append("Maximum Signups needs to be an integer greater than 0")
+
+        if errors:
+            for e in errors:
+                flash(e, "error")
+
+            return render_template("partials/flash_messages.html")
+
+        if opp_end_date:
+            if not validate_start_end_dates(opp_start_date, opp_end_date):
+                flash(
+                    "The Start date cannot be greater than End date",
+                    "error",
+                )
+                return render_template("partials/flash_messages.html")
+
+            if not compare_date_with_today(
+                    opp_start_date
+            ) and not compare_date_with_today(opp_end_date):
+                flash(
+                    "You can only add future opportunities",
+                    "error",
+                )
+                return render_template("partials/flash_messages.html")
+        else:
+            if not compare_date_with_today(opp_start_date):
+                flash(
+                    "You can only add future opportunities",
+                    "error",
+                )
+                return render_template("partials/flash_messages.html")
+
+        # check if opportunity already exists
+        if (
+                get_opportunity_for_org_by_title(opp_details["org_id"], opp_title)
+                and opp_title != opp_details["title"]
+        ):
+            flash(
+                "An opportunity with this name already exists, use a different name",
+                "error",
+            )
+            return render_template("partials/flash_messages.html")
+
+        if "flyer" in request.files:
+            opp_image = request.files["flyer"]
+            try:
+                opp_image_url = upload_image(opp_image)
+            except Exception as e:
+                flash("Error in image upload, try again")
+                return render_template("partials/flash_messages.html")
+        else:
+            opp_image_url = opp_details["opp_image_url"]
+
+        if opp_end_date == "":
+            opp_end_date = None
+
+        if opp_max_signups == "":
+            opp_max_signups = None
+        else:
+            opp_max_signups = int(opp_max_signups)
+
+        if (
+                opp_title == opp_details["title"]
+                and opp_description == opp_details["description"]
+                and opp_category == opp_details["category"]
+                and opp_image_url == opp_details["opp_image_url"]
+                and str(opp_start_date) == str(opp_details["start_date"])
+                and opp_end_date == opp_details["end_date"]
+                and opp_max_signups == opp_details["max_signups"]
+        ):
+            flash("You have not made any changes", "warning")
+            return render_template("partials/flash_messages.html")
+
+        update_opp(
+            opp_title,
+            opp_image_url,
+            opp_description,
+            opp_category,
+            opp_start_date,
+            opp_end_date,
+            opp_max_signups,
+            opp_id,
+        )
+
+        if request.headers.get("HX-Request"):
+            response = make_response("")
+            response.headers["HX-Trigger"] = json.dumps(
+                {
+                    "showToast": {
+                        "message": "Opportunity updated successfully",
+                        "type": "success",
+                    }
+                }
+            )
+            response.headers["HX-Redirect"] = url_for(
+                "organization_manage", org_id=opp_details["org_id"]
+            )
+            return response
+
+        flash("Opportunity updated successfully", "error")
+        return redirect(url_for("organization_manage", org_id=opp_details["org_id"]))
+
+    return render_template("opportunity_update.html", opp=opp_details)
 
 
 @app.route("/opportunity/delete-confirm/<int:opp_id>", methods=["GET"])
