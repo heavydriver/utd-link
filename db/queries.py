@@ -255,6 +255,7 @@ def get_all_current_opportunities_for_org(org_id: int):
                category,
                start_date,
                end_date,
+               max_signups,
                opp.org_id,
                org.org_name
         FROM opportunities AS opp,
@@ -292,7 +293,8 @@ def get_opportunity_details(opp_id: int):
                start_date,
                end_date,
                opp.org_id,
-               org.org_name
+               org.org_name,
+               org.org_rep_id
         FROM opportunities AS opp,
              organizations AS org
         WHERE opp_id = %s
@@ -385,6 +387,24 @@ def create_new_opportunity(
                 org_id,
             ),
         )
+    conn.commit()
+
+    cur.close()
+    put_conn(conn)
+
+
+def delete_opp(opp_id):
+    conn = get_conn()
+    cur = conn.cursor()
+
+    cur.execute(
+        """
+        DELETE
+        FROM opportunities
+        WHERE opp_id = %s
+        """,
+        (opp_id,),
+    )
     conn.commit()
 
     cur.close()

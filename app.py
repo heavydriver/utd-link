@@ -36,6 +36,7 @@ from db.queries import (
     get_max_signups,
     update_org,
     delete_org,
+    delete_opp,
 )
 from utils.auth import (
     compare_password,
@@ -551,6 +552,10 @@ def organization_manage(org_id: int):
 def organization_manage_opportunities(org_id: int):
     org_opportunities = get_all_current_opportunities_for_org(org_id)
 
+    for opp in org_opportunities:
+        total_signups = get_signup_count_for_opp(opp["opp_id"])
+        opp["total_signups"] = total_signups
+
     return render_template(
         "partials/org_manage_opportunities.html",
         org_opps=org_opportunities,
@@ -715,6 +720,155 @@ def opportunity_create(org_id: int):
         return response
 
     return render_template("addOpportunity.html", org_id=org_id)
+
+
+@app.route(
+    "/organization/manage/<int:opp_id>/update-opportunity", methods=["GET", "POST"]
+)
+@login_required
+def opportunity_update(opp_id: int):
+    opp_details = get_opportunity_details(opp_id)
+    user_id = session["user_id"]
+
+    if not opp_details:
+        if request.headers.get("HX-Request"):
+            response = make_response("")
+            response.headers["HX-Trigger"] = json.dumps(
+                {
+                    "showToast": {
+                        "message": "That opportunity does not exist",
+                        "type": "error",
+                        "fromHTMX": True,
+                    }
+                }
+            )
+            return response
+
+        flash("That opportunity does not exist", "error")
+        return redirect(url_for("profile", tab="orgs"))
+
+    if opp_details["org_rep_id"] != user_id:
+        if request.headers.get("HX-Request"):
+            response = make_response("")
+            response.headers["HX-Trigger"] = json.dumps(
+                {
+                    "showToast": {
+                        "message": "You are not authorized to make this request",
+                        "type": "error",
+                    }
+                }
+            )
+            response.headers["HX-Redirect"] = url_for("dashboard")
+            return response
+
+        flash("You are not authorized to make this request", "error")
+        return redirect(url_for("dashboard"))
+
+    return ""
+
+
+@app.route("/opportunity/delete-confirm/<int:opp_id>", methods=["GET"])
+@login_required
+def opportunity_delete_confirmation(opp_id: int):
+    opp_details = get_opportunity_details(opp_id)
+    user_id = session["user_id"]
+
+    if not opp_details:
+        if request.headers.get("HX-Request"):
+            response = make_response("")
+            response.headers["HX-Trigger"] = json.dumps(
+                {
+                    "showToast": {
+                        "message": "That opportunity does not exist",
+                        "type": "error",
+                        "fromHTMX": True,
+                    }
+                }
+            )
+            return response
+
+        flash("That opportunity does not exist", "error")
+        return redirect(url_for("profile", tab="orgs"))
+
+    if opp_details["org_rep_id"] != user_id:
+        if request.headers.get("HX-Request"):
+            response = make_response("")
+            response.headers["HX-Trigger"] = json.dumps(
+                {
+                    "showToast": {
+                        "message": "You are not authorized to make this request",
+                        "type": "error",
+                    }
+                }
+            )
+            response.headers["HX-Redirect"] = url_for("dashboard")
+            return response
+
+        flash("You are not authorized to make this request", "error")
+        return redirect(url_for("dashboard"))
+
+    return render_template("opportunity_delete_confirmation.html", opp=opp_details)
+
+
+@app.delete("/opportunity/delete/<int:opp_id>")
+@login_required
+def opportunity_delete(opp_id: int):
+    opp_details = get_opportunity_details(opp_id)
+    user_id = session["user_id"]
+
+    if not opp_details:
+        if request.headers.get("HX-Request"):
+            response = make_response("")
+            response.headers["HX-Trigger"] = json.dumps(
+                {
+                    "showToast": {
+                        "message": "That opportunity does not exist",
+                        "type": "error",
+                        "fromHTMX": True,
+                    }
+                }
+            )
+            return response
+
+        flash("That opportunity does not exist", "error")
+        return redirect(url_for("profile", tab="orgs"))
+
+    if opp_details["org_rep_id"] != user_id:
+        if request.headers.get("HX-Request"):
+            response = make_response("")
+            response.headers["HX-Trigger"] = json.dumps(
+                {
+                    "showToast": {
+                        "message": "You are not authorized to make this request",
+                        "type": "error",
+                    }
+                }
+            )
+            response.headers["HX-Redirect"] = url_for("dashboard")
+            return response
+
+        flash("You are not authorized to make this request", "error")
+        return redirect(url_for("dashboard"))
+
+    delete_opp(opp_id)
+
+    if request.headers.get("HX-Request"):
+        response = make_response("")
+        response.headers["HX-Trigger"] = json.dumps(
+            {
+                "showToast": {
+                    "message": "Opportunity deleted successfully",
+                    "type": "success",
+                }
+            }
+        )
+        response.headers["HX-Redirect"] = url_for(
+            "organization_manage", org_id=opp_details["org_id"]
+        )
+        return response
+
+    flash("Opportunity deleted successfully", "success")
+    return redirect(url_for("organization_manage", org_id=opp_details["org_id"]))
 
 
 @app.route("/signup/<int:opp_id>", methods=["POST"])
