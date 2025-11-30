@@ -26,15 +26,21 @@ from db.queries import (
     create_new_org,
     get_org_details,
     get_all_current_opportunities_for_org,
-    delete_user_signup,
     get_opportunity_for_org_by_title,
     create_new_opportunity,
+    get_all_signups_for_org,
+    delete_user_signup,
+    get_signup_by_user_and_opp,
+    create_new_signup,
+    get_signup_count_for_opp,
+    get_max_signups,
 )
 from utils.auth import (
     compare_password,
     hash_password,
     login_required,
     is_representative,
+    is_authorized_to_delete_signup,
 )
 from utils.image_uploader import upload_image
 from utils.validator import (
@@ -391,7 +397,40 @@ def organization_manage_opportunities(org_id: int):
 @login_required
 @is_representative
 def organization_manage_signups(org_id: int):
-    return "Hello"
+    signups = get_all_signups_for_org(org_id)
+
+    # group by opportunities
+    opportunities = {}
+    for s in signups:
+        opp_id = s["opp_id"]
+
+        if opp_id not in opportunities:
+            opportunities[opp_id] = {
+                "opp_id": opp_id,
+                "title": s["title"],
+                "start_date": s["start_date"],
+                "end_date": s["end_date"],
+                "signups": [],
+            }
+
+        if s["signup_id"] is not None:
+            opportunities[opp_id]["signups"].append(
+                {
+                    "signup_id": s["signup_id"],
+                    "signup_date": s["signup_date"],
+                    "status": s["status"],
+                    "user": {
+                        "user_id": s["user_id"],
+                        "first_name": s["first_name"],
+                        "last_name": s["last_name"],
+                        "email": s["email"],
+                    },
+                }
+            )
+
+    return render_template(
+        "partials/org_manage_signups.html", opportunities=opportunities.values()
+    )
 
 
 @app.route("/organization/manage/<int:org_id>/add-opportunity", methods=["GET", "POST"])
@@ -513,15 +552,99 @@ def opportunity_create(org_id: int):
     return render_template("addOpportunity.html", org_id=org_id)
 
 
-@app.route("/signup/<int:signup_id>/delete", methods=["POST"])
+@app.route("/signup/<int:opp_id>", methods=["POST"])
 @login_required
-def signup_delete(signup_id: int):
+def signup(opp_id: int):
     user_id = session["user_id"]
 
-    print(signup_id)
+    if not get_opportunity_details(opp_id):
+        flash("That opportunity does not exist", "error")
+        return redirect(url_for("dashboard"))
 
-    delete_user_signup(signup_id, user_id)
-    return ""
+    if get_signup_by_user_and_opp(user_id, opp_id):
+        if request.headers.get("HX-Request"):
+            response = make_response(
+                render_template("partials/signup/already_registered.html")
+            )
+            response.headers["HX-Trigger"] = json.dumps(
+                {
+                    "showToast": {
+                        "message": "You have already registered for this opportunity",
+                        "type": "warning",
+                        "fromHTMX": True,
+                    }
+                }
+            )
+            return response
+
+        flash("You have already registered for this opportunity", "warning")
+        return redirect(url_for("opportunity_details", opp_id=opp_id))
+
+    signup_count = get_signup_count_for_opp(opp_id)
+    max_signup_count = get_max_signups(opp_id)
+
+    if max_signup_count and signup_count == max_signup_count:
+        if request.headers.get("HX-Request"):
+            response = make_response(
+                render_template("partials/signup/full_capacity.html")
+            )
+            response.headers["HX-Trigger"] = json.dumps(
+                {
+                    "showToast": {
+                        "message": "Cannot signup, this opportunity has reached its maximum signup capacity",
+                        "type": "error",
+                        "fromHTMX": True,
+                    }
+                }
+            )
+            return response
+
+        flash(
+            "Cannot signup, this opportunity has reached its maximum signup capacity",
+            "error",
+        )
+        return redirect(url_for("opportunity_details", opp_id=opp_id))
+
+    create_new_signup(user_id, opp_id)
+
+    if request.headers.get("HX-Request"):
+        response = make_response(render_template("partials/signup/success.html"))
+        response.headers["HX-Trigger"] = json.dumps(
+            {
+                "showToast": {
+                    "message": "Signed up successfully",
+                    "type": "success",
+                    "fromHTMX": True,
+                }
+            }
+        )
+        return response
+
+    flash("Signed up successfully", "success")
+    return redirect(url_for("opportunity_details", opp_id=opp_id))
+
+
+@app.route("/signup/<int:signup_id>/delete", methods=["POST"])
+@login_required
+@is_authorized_to_delete_signup
+def signup_delete(signup_id: int):
+    delete_user_signup(signup_id)
+
+    if request.headers.get("HX-Request"):
+        response = make_response("")
+        response.headers["HX-Trigger"] = json.dumps(
+            {
+                "showToast": {
+                    "message": "Signup deleted successfully",
+                    "type": "success",
+                    "fromHTMX": True,
+                }
+            }
+        )
+        return response
+
+    flash("Signup deleted successfully", "success")
+    return redirect(url_for("profile"))
 
 
 if __name__ == "__main__":

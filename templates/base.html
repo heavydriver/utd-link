@@ -34,7 +34,14 @@
 
         const parsed = JSON.parse(triggers)
         if (parsed.showToast) {
-            localStorage.setItem("flash_toast", JSON.stringify(parsed.showToast))
+            if (!parsed.showToast.fromHTMX) {
+                localStorage.setItem("flash_toast", JSON.stringify(parsed.showToast))
+            }
+
+            // fire immediately
+            document.body.dispatchEvent(
+                new CustomEvent("show-toast", {detail: parsed.showToast})
+            )
         }
     })
 
@@ -75,10 +82,10 @@
         document.body.appendChild(t)
 
         // Fade-in
-        setTimeout(() => {
+        requestAnimationFrame(() => {
             t.classList.remove("opacity-0", "-translate-y-3")
             t.classList.add("opacity-100", "translate-y-0")
-        }, 500)
+        })
 
         // Fade-out
         setTimeout(() => {

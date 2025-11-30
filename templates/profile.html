@@ -10,26 +10,18 @@
                 document.getElementById("tab-orgs").classList.add("text-utdOrange", "border-utdOrange", "border-b-2")
                 document.getElementById("tab-orgs").classList.remove("hover:text-utdOrange", "hover:border-utdOrange")
 
-                fetch("{{ url_for("profile_orgs") }}")
-                    .then(response => response.text())
-                    .then(htmlContent => {
-                        document.getElementById("tab-content").innerHTML = htmlContent;
-                    })
-                    .catch(error => {
-                        console.error('Error fetching data:', error);
-                    });
+                htmx.ajax('GET', "{{ url_for('profile_orgs') }}", {
+                    target: '#tab-content',
+                    swap: 'innerHTML'
+                })
             } else if (tab === "signups") {
                 document.getElementById("tab-signups").classList.add("text-utdOrange", "border-utdOrange", "border-b-2")
                 document.getElementById("tab-signups").classList.remove("hover:text-utdOrange", "hover:border-utdOrange")
 
-                fetch("{{ url_for("profile_signups") }}")
-                    .then(response => response.text())
-                    .then(htmlContent => {
-                        document.getElementById("tab-content").innerHTML = htmlContent;
-                    })
-                    .catch(error => {
-                        console.error('Error fetching data:', error);
-                    });
+                htmx.ajax('GET', "{{ url_for('profile_signups') }}", {
+                    target: '#tab-content',
+                    swap: 'innerHTML'
+                })
             }
 
             // highlight active tab
@@ -83,7 +75,7 @@
                     <a hx-get="{{ url_for("profile_signups") }}" hx-trigger="click"
                        hx-target="#tab-content"
                        hx-swap="innerHTML"
-                       class="tab-btn flex items-center gap-2 text-gray-700 inline-flex items-center justify-center p-4 border-b border-transparent rounded-t-base hover:cursor-pointer"
+                       class="tab-btn flex gap-2 text-gray-700 inline-flex items-center justify-center p-4 border-b border-transparent rounded-t-base hover:cursor-pointer"
                        id="tab-signups">
                         <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none"
                              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -104,7 +96,7 @@
                     <a hx-get="{{ url_for("profile_orgs") }}" hx-trigger="click"
                        hx-target="#tab-content"
                        hx-swap="innerHTML"
-                       class="tab-btn flex items-center gap-2 text-gray-700 inline-flex items-center justify-center p-4 border-b border-transparent rounded-t-base hover:cursor-pointer"
+                       class="tab-btn flex gap-2 text-gray-700 inline-flex items-center justify-center p-4 border-b border-transparent rounded-t-base hover:cursor-pointer"
                        id="tab-orgs">
                         <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none"
                              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
