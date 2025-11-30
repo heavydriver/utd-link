@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 {% block content %}
-    {% include "navbar.html" %}
+    {% include "partials/navbar.html" %}
 
     <main class="flex-grow self-center mt-10 mb-12 px-5 w-full max-w-3xl">
         <h2 class="font-bold text-2xl mb-6">Research Assistant Application</h2>
 
         <form method="POST" enctype="multipart/form-data"
               class="bg-white shadow-sm p-6 border border-gray-200 rounded-lg space-y-4">
-            
+
 
             <div>
                 <label class="block font-medium mb-1">Full Name</label>
@@ -31,8 +31,8 @@
             </div>
 
             <button
-                type="submit"
-                class="px-4 py-2 bg-utdOrange text-white rounded-lg hover:bg-orange-500 transition">
+                    type="submit"
+                    class="px-4 py-2 bg-utdOrange text-white rounded-lg hover:bg-orange-500 transition">
                 Submit Application
             </button>
         </form>

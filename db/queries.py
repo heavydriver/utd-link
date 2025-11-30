@@ -146,6 +146,22 @@ def create_new_org(org_name, org_type, org_email, org_image_url, user_id):
     put_conn(conn)
 
 
+def check_is_representative(user_id: int, org_id: int):
+    conn = get_conn()
+    cur = conn.cursor()
+
+    cur.execute(
+        "SELECT * FROM organizations WHERE org_id = %s AND org_rep_id = %s",
+        (org_id, user_id),
+    )
+    row = cur.fetchone()
+
+    cur.close()
+    put_conn(conn)
+
+    return row
+
+
 # ********************************
 # queries for opportunities table
 # ********************************
@@ -204,7 +220,7 @@ def get_all_current_opportunities_for_org(org_id: int):
                org.org_name
         FROM opportunities AS opp,
              organizations AS org
-        WHERE (start_date >= %s OR end_date <= %s)
+        WHERE (start_date >= %s OR end_date >= %s)
           AND opp.org_id = org.org_id
           AND opp.org_id = %s
         ORDER BY start_date ASC;
@@ -251,6 +267,68 @@ def get_opportunity_details(opp_id: int):
     put_conn(conn)
 
     return row
+
+
+def get_opportunity_for_org_by_title(org_id: int, title: str):
+    conn = get_conn()
+    cur = conn.cursor()
+
+    cur.execute(
+        "SELECT * FROM opportunities WHERE org_id = %s AND title = %s",
+        (org_id, title),
+    )
+    row = cur.fetchone()
+
+    cur.close()
+    put_conn(conn)
+
+    return row
+
+
+def create_new_opportunity(
+        title,
+        opp_image_url,
+        description,
+        category,
+        start_date,
+        end_date,
+        max_signups,
+        org_id,
+):
+    conn = get_conn()
+    cur = conn.cursor()
+
+    if len(opp_image_url) > 0:
+        cur.execute(
+            "INSERT INTO opportunities (title, opp_image_url, description, category, start_date, end_date, max_signups, org_id) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",
+            (
+                title,
+                opp_image_url,
+                description,
+                category,
+                start_date,
+                end_date,
+                max_signups,
+                org_id,
+            ),
+        )
+    else:
+        cur.execute(
+            "INSERT INTO opportunities (title, description, category, start_date, end_date, max_signups, org_id) VALUES (%s, %s, %s, %s, %s, %s, %s)",
+            (
+                title,
+                description,
+                category,
+                start_date,
+                end_date,
+                max_signups,
+                org_id,
+            ),
+        )
+    conn.commit()
+
+    cur.close()
+    put_conn(conn)
 
 
 # ********************************

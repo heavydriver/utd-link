@@ -1,0 +1,42 @@
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <div class="space-y-3 w-full">
+            {% for category, msg in messages %}
+                {% if category == 'success' %}
+                    {% set bg = "bg-green-100" %}
+                    {% set border = "border-green-500" %}
+                    {% set text = "text-green-800" %}
+                {% elif category == 'error' %}
+                    {% set bg = "bg-red-100" %}
+                    {% set border = "border-red-500" %}
+                    {% set text = "text-red-800" %}
+                {% elif category == 'warning' %}
+                    {% set bg = "bg-yellow-100" %}
+                    {% set border = "border-yellow-500" %}
+                    {% set text = "text-yellow-800" %}
+                {% else %}
+                    {% set bg = "bg-gray-100" %}
+                    {% set border = "border-gray-500" %}
+                    {% set text = "text-gray-800" %}
+                {% endif %}
+
+                <div class="flash-msg py-3 px-4 rounded-md border-l-4 {{ bg }} {{ border }}">
+                    <p class="text-sm font-medium {{ text }}">{{ msg }}</p>
+                </div>
+            {% endfor %}
+        </div>
+
+        <script>
+            document.addEventListener("DOMContentLoaded", () => {
+                document.querySelectorAll(".flash-msg").forEach(el => {
+                    const timeout = parseInt(el.dataset.timeout) || 4000
+
+                    setTimeout(() => {
+                        el.style.opacity = "0"
+                        setTimeout(() => el.remove(), 700)
+                    }, timeout)
+                })
+            })
+        </script>
+    {% endif %}
+{% endwith %}

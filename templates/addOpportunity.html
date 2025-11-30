@@ -20,7 +20,7 @@
 
         <!-- error messages -->
         <div id="error-messages" class="transition-all duration-300 flex items-center mx-auto max-w-lg w-full mb-3">
-            {% include "partials/errorMessages.html" %}
+            {% include "partials/flash_messages.html" %}
         </div>
 
         <div class="flex items-center mx-auto max-w-lg">
@@ -39,6 +39,31 @@
                         required
                         class="bg-gray-50 shadow shadow-gray-100 mt-1 p-3 border border-gray-300 focus:border-utdOrange rounded-md outline-none focus:ring-2 focus:ring-utdOrange/50 transition-colors duration-300"
                 />
+
+                <label for="category" class="mt-4 font-semibold text-lg">Category</label>
+                <select
+                        id="category"
+                        name="category"
+                        required
+                        class="block w-full mt-1 p-3 bg-gray-100 border border-gray-200 text-heading text-sm rounded-md outline-none focus:border-utdOrange focus:ring-2 focus:ring-utdOrange/50 transition-colors duration-300 shadow-xs"
+                >
+                    <option value="" selected>Choose a category</option>
+                    <option value="career_development">Career Development</option>
+                    <option value="career_fair">Career Fair</option>
+                    <option value="competition">Competition</option>
+                    <option value="conference">Conference</option>
+                    <option value="guest_lecture">Guest Lecture</option>
+                    <option value="hackathon">Hackathon</option>
+                    <option value="internship_info">Internship Info</option>
+                    <option value="networking_event">Networking Event</option>
+                    <option value="panel_discussion">Panel Discussion</option>
+                    <option value="research_opportunity">Research Opportunity</option>
+                    <option value="seminar">Seminar</option>
+                    <option value="social_event">Social Event</option>
+                    <option value="training_session">Training Session</option>
+                    <option value="volunteering">Volunteering</option>
+                    <option value="workshop">Workshop</option>
+                </select>
 
                 <label for="description" class="mt-4 font-semibold text-lg"
                 >Description</label
@@ -117,7 +142,6 @@
                         id="flyer"
                         name="flyer"
                         accept="image/png, image/jpeg"
-                        required
                         class="bg-gray-50 hover:file:bg-orange-400 file:bg-orange-300 shadow shadow-gray-100 file:mr-5 file:px-4 file:py-2 border border-gray-300 file:border-0 rounded-lg file:rounded-md outline-none file:font-semibold text-gray-500 file:text-black text-sm file:text-sm"
                 />
 
