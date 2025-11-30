@@ -369,7 +369,7 @@ def opportunity_create(org_id: int):
         errors = []
 
         if not validate_not_empty(
-                opp_title, opp_description, opp_start_date, opp_end_date, opp_max_signups
+            opp_title, opp_description, opp_start_date, opp_end_date, opp_max_signups
         ):
             errors.append("Please enter data in all fields")
 
