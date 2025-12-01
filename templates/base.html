@@ -93,8 +93,16 @@
             t.classList.add("opacity-0", "-translate-y-3")
 
             setTimeout(() => t.remove(), 300)
-        }, 3500)
+        }, 3000)
     })
+
+    function handleBack() {
+        if (document.referrer !== "") {
+            window.history.back();
+        } else {
+            window.location.href = "{{ url_for('dashboard') }}";
+        }
+    }
 </script>
 {% block content %}{% endblock %}
 </body>

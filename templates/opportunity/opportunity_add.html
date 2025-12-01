@@ -1,6 +1,15 @@
 {% extends "base.html" %}
 
 {% block content %}
+    <script>
+        document.body.addEventListener("htmx:afterSwap", (event) => {
+            if (event.detail.target.id === "error-messages") {
+                document.getElementById("error-messages")
+                    .scrollIntoView({behavior: "smooth", block: "center"});
+            }
+        });
+    </script>
+
     <!-- navbar -->
     {% include "partials/navbar.html" %}
 
@@ -12,6 +21,20 @@
                 rel="stylesheet"
         />
         <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
+
+        <!-- back button -->
+        <div class="mb-2 text-sm font-medium text-gray-600 hover:cursor-pointer hover:text-gray-800 transition-colors">
+            <button onclick="handleBack()" class="inline-flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                     class="lucide lucide-move-left-icon lucide-move-left">
+                    <path d="M6 8L2 12L6 16"/>
+                    <path d="M2 12H22"/>
+                </svg>
+
+                <span>Back</span>
+            </button>
+        </div>
 
         <!-- header -->
         <div class="flex flex-wrap justify-between items-center gap-3 mb-6">
@@ -34,7 +57,7 @@
                 <input
                         type="text"
                         id="title"
-                        name="tile"
+                        name="title"
                         placeholder="Enter the title"
                         required
                         class="bg-gray-50 shadow shadow-gray-100 mt-1 p-3 border border-gray-300 focus:border-utdOrange rounded-md outline-none focus:ring-2 focus:ring-utdOrange/50 transition-colors duration-300"
@@ -170,7 +193,4 @@
             </form>
         </div>
     </main>
-
-    <!-- footer -->
-    {% include "partials/footer.html" %}
 {% endblock content %}

@@ -38,6 +38,7 @@ from db.queries import (
     delete_org,
     delete_opp,
     update_opp,
+    get_all_non_user_orgs,
 )
 from utils.auth import (
     compare_password,
@@ -71,6 +72,9 @@ app.secret_key = os.getenv("SECRET_KEY")
 #     print(request.method, request.path)
 
 
+# ************************
+# different pages
+# ************************
 @app.route("/")
 def index():
     return render_template("index.html")
@@ -78,7 +82,7 @@ def index():
 
 @app.route("/about")
 def about():
-    return render_template("AboutUs.html")
+    return render_template("about_us.html")
 
 
 @app.route("/internshipApply")
@@ -103,11 +107,16 @@ def apply_event():
 
 @app.route("/privacy")
 def privacy():
-    return "Privacy Page"
+    return render_template("privacy_policy.html")
 
 
+# ************************
+# login, register, and logout routes
+# ************************
 @app.route("/login", methods=["GET", "POST"])
 def login():
+    back_url = request.referrer or url_for("index")
+
     # if user is already logged in, return
     if "user_id" in session:
         return redirect(url_for("dashboard"))
@@ -162,11 +171,13 @@ def login():
         flash("Welcome back", "success")
         return redirect(url_for("dashboard"))
 
-    return render_template("login.html")
+    return render_template("login.html", back_url=back_url)
 
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
+    back_url = request.referrer or url_for("index")
+
     # if user is already logged in, return
     if "user_id" in session:
         return redirect(url_for("dashboard"))
@@ -233,7 +244,7 @@ def register():
         flash("Account created successfully", "success")
         return redirect(url_for("dashboard"))
 
-    return render_template("register.html")
+    return render_template("register.html", back_url=back_url)
 
 
 @app.route("/logout", methods=["GET"])
@@ -245,6 +256,9 @@ def logout():
     return redirect(url_for("index"))
 
 
+# ************************
+# profile management routes
+# ************************
 @app.route("/profile", methods=["GET"])
 @login_required
 def profile():
@@ -272,9 +286,18 @@ def profile_orgs():
     return render_template("partials/profile_orgs.html", organizations=organizations)
 
 
+# ************************
+# dashboard routes
+# ************************
 @app.route("/dashboard", methods=["GET"])
 @login_required
 def dashboard():
+    return render_template("dashboard.html")
+
+
+@app.route("/dashboard/tabs/opportunities", methods=["GET"])
+@login_required
+def dashboard_opportunities():
     opportunities = get_all_current_opportunities()
     categories = list(
         set(
@@ -287,32 +310,72 @@ def dashboard():
     categories.sort()
 
     return render_template(
-        "dashboard.html", opportunities=opportunities, categories=categories
+        "partials/dashboard_opportunities.html",
+        opportunities=opportunities,
+        categories=categories,
     )
 
 
+@app.route("/dashboard/tabs/organizations", methods=["GET"])
+@login_required
+def dashboard_organizations():
+    user_id = session.get("user_id")
+    user_organizations = get_all_user_orgs(user_id)
+    other_organizations = get_all_non_user_orgs(user_id)
+
+    print(other_organizations)
+
+    return render_template(
+        "partials/dashboard_organizations.html",
+        user_orgs=user_organizations,
+        organizations=other_organizations,
+    )
+
+
+# ************************
+# opportunity details route
+# ************************
 @app.route("/opportunity/<int:opp_id>", methods=["GET"])
 @login_required
 def opportunity_details(opp_id: int):
     opp_details = get_opportunity_details(opp_id)
+    back_url = request.referrer or url_for("dashboard")
 
-    return render_template("opportunityDetails.html", opp_details=opp_details)
+    return render_template(
+        "opportunity/opportunity_details.html",
+        opp_details=opp_details,
+        back_url=back_url,
+    )
 
 
+# ************************
+# organization details route
+# ************************
 @app.route("/organization/<int:org_id>", methods=["GET"])
 @login_required
 def organization_details(org_id: int):
     org_details = get_org_details(org_id)
     org_opportunities = get_all_current_opportunities_for_org(org_id)
+    back_url = request.referrer or url_for("dashboard", tab="orgs")
+
+    print(request.referrer)
 
     return render_template(
-        "organizationDetails.html", org_details=org_details, org_opps=org_opportunities
+        "organization/organization_details.html",
+        org_details=org_details,
+        org_opps=org_opportunities,
+        back_url=back_url,
     )
 
 
+# ************************
+# organization management routes
+# ************************
 @app.route("/organization/create", methods=["GET", "POST"])
 @login_required
 def organization_create():
+    back_url = request.referrer or url_for("profile")
+
     if request.method == "POST":
         org_name = request.form["name"].strip()
         org_type = request.form["org_type"].strip()
@@ -372,14 +435,15 @@ def organization_create():
         flash("Organization created successfully", "success")
         return redirect(url_for("profile", tab="orgs"))
 
-    return render_template("createOrganization.html")
+    return render_template("organization/organization_create.html", back_url=back_url)
 
 
-@app.route("/organization/update/<int:org_id>", methods=["GET", "POST"])
+@app.route("/organization/<int:org_id>/update", methods=["GET", "POST"])
 @login_required
 @is_representative
 def organization_update(org_id: int):
     org_details = get_org_details(org_id)
+    back_url = request.referrer or url_for("organization_manage", org_id=org_id)
 
     if not org_details:
         if request.headers.get("HX-Request"):
@@ -467,10 +531,12 @@ def organization_update(org_id: int):
         flash("Organization updated successfully", "success")
         return redirect(url_for("profile", tab="orgs"))
 
-    return render_template("organization_update.html", org=org_details)
+    return render_template(
+        "organization/organization_update.html", org=org_details, back_url=back_url
+    )
 
 
-@app.route("/organization/delete-confirm/<int:org_id>", methods=["GET"])
+@app.route("/organization/<int:org_id>/delete-confirm", methods=["GET"])
 @login_required
 @is_representative
 def organization_delete_confirmation(org_id: int):
@@ -493,10 +559,12 @@ def organization_delete_confirmation(org_id: int):
         flash("That organization does not exist", "error")
         return redirect(url_for("profile", tab="orgs"))
 
-    return render_template("organization_delete_confirmation.html", org=org_details)
+    return render_template(
+        "organization/organization_delete_confirmation.html", org=org_details
+    )
 
 
-@app.delete("/organization/delete/<int:org_id>")
+@app.delete("/organization/<int:org_id>/delete")
 @login_required
 @is_representative
 def organization_delete(org_id: int):
@@ -538,16 +606,21 @@ def organization_delete(org_id: int):
     return redirect(url_for("profile", tab="orgs"))
 
 
-@app.route("/organization/manage/<int:org_id>", methods=["GET"])
+@app.route("/organization/<int:org_id>/manage", methods=["GET"])
 @login_required
 @is_representative
 def organization_manage(org_id: int):
     org_details = get_org_details(org_id)
+    back_url = request.referrer or url_for("profile", tab="orgs")
 
-    return render_template("organizationManage.html", org_details=org_details)
+    return render_template(
+        "organization/organization_manage.html",
+        org_details=org_details,
+        back_url=back_url,
+    )
 
 
-@app.route("/organization/manage/<int:org_id>/opportunities", methods=["GET"])
+@app.route("/organization/<int:org_id>/manage/opportunities", methods=["GET"])
 @login_required
 @is_representative
 def organization_manage_opportunities(org_id: int):
@@ -564,7 +637,7 @@ def organization_manage_opportunities(org_id: int):
     )
 
 
-@app.route("/organization/manage/<int:org_id>/signups", methods=["GET"])
+@app.route("/organization/<int:org_id>/manage/signups", methods=["GET"])
 @login_required
 @is_representative
 def organization_manage_signups(org_id: int):
@@ -604,10 +677,15 @@ def organization_manage_signups(org_id: int):
     )
 
 
-@app.route("/organization/manage/<int:org_id>/add-opportunity", methods=["GET", "POST"])
+# ************************
+# opportunity management routes
+# ************************
+@app.route("/organization/<int:org_id>/add-opportunity", methods=["GET", "POST"])
 @login_required
 @is_representative
 def opportunity_create(org_id: int):
+    back_url = request.referrer or url_for("organization_manage", org_id=org_id)
+
     if request.method == "POST":
         opp_title = request.form["title"].strip()
         opp_category = request.form["category"].strip()
@@ -726,16 +804,19 @@ def opportunity_create(org_id: int):
         flash("Opportunity created successfully", "error")
         return redirect(url_for("organization_manage", org_id=org_id))
 
-    return render_template("addOpportunity.html", org_id=org_id)
+    return render_template(
+        "opportunity/opportunity_add.html", org_id=org_id, back_url=back_url
+    )
 
 
-@app.route(
-    "/organization/manage/<int:opp_id>/update-opportunity", methods=["GET", "POST"]
-)
+@app.route("/organization/<int:opp_id>/update-opportunity", methods=["GET", "POST"])
 @login_required
 def opportunity_update(opp_id: int):
     opp_details = get_opportunity_details(opp_id)
     user_id = session["user_id"]
+    back_url = request.referrer or url_for(
+        "organization_manage", org_id=opp_details["org_id"]
+    )
 
     if not opp_details:
         if request.headers.get("HX-Request"):
@@ -870,7 +951,7 @@ def opportunity_update(opp_id: int):
                 and opp_category == opp_details["category"]
                 and opp_image_url == opp_details["opp_image_url"]
                 and str(opp_start_date) == str(opp_details["start_date"])
-                and opp_end_date == opp_details["end_date"]
+                and str(opp_end_date) == str(opp_details["end_date"])
                 and opp_max_signups == opp_details["max_signups"]
         ):
             flash("You have not made any changes", "warning")
@@ -905,10 +986,12 @@ def opportunity_update(opp_id: int):
         flash("Opportunity updated successfully", "error")
         return redirect(url_for("organization_manage", org_id=opp_details["org_id"]))
 
-    return render_template("opportunity_update.html", opp=opp_details)
+    return render_template(
+        "opportunity/opportunity_update.html", opp=opp_details, back_url=back_url
+    )
 
 
-@app.route("/opportunity/delete-confirm/<int:opp_id>", methods=["GET"])
+@app.route("/opportunity/<int:opp_id>/delete-confirm", methods=["GET"])
 @login_required
 def opportunity_delete_confirmation(opp_id: int):
     opp_details = get_opportunity_details(opp_id)
@@ -948,10 +1031,12 @@ def opportunity_delete_confirmation(opp_id: int):
         flash("You are not authorized to make this request", "error")
         return redirect(url_for("dashboard"))
 
-    return render_template("opportunity_delete_confirmation.html", opp=opp_details)
+    return render_template(
+        "opportunity/opportunity_delete_confirmation.html", opp=opp_details
+    )
 
 
-@app.delete("/opportunity/delete/<int:opp_id>")
+@app.delete("/opportunity/<int:opp_id>/delete")
 @login_required
 def opportunity_delete(opp_id: int):
     opp_details = get_opportunity_details(opp_id)

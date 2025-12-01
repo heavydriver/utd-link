@@ -85,6 +85,19 @@ def get_all_user_orgs(user_id: str):
     return rows
 
 
+def get_all_non_user_orgs(user_id: str):
+    conn = get_conn()
+    cur = conn.cursor()
+
+    cur.execute("SELECT * FROM organizations WHERE org_rep_id <> %s", (user_id,))
+    rows = cur.fetchall()
+
+    cur.close()
+    put_conn(conn)
+
+    return rows
+
+
 def get_org_by_name(org_name: str):
     conn = get_conn()
     cur = conn.cursor()

@@ -1,0 +1,71 @@
+<div class="w-full flex justify-between items-center mb-4">
+    {% if user_orgs %}
+        <div class="flex flex-wrap justify-between items-center gap-3">
+            <h2 class="font-bold text-2xl">You Organizations</h2>
+        </div>
+    {% else %}
+        <div class="flex flex-wrap justify-between items-center gap-3">
+            <h2 class="font-bold text-2xl">Organizations</h2>
+        </div>
+    {% endif %}
+
+    <a href="{{ url_for("organization_create") }}"
+       class="ml-auto flex items-center gap-2 px-4 py-2 bg-utdOrange text-white font-semibold rounded-lg hover:bg-utdOrange/90">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+             class="lucide lucide-circle-plus-icon lucide-circle-plus">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M8 12h8"/>
+            <path d="M12 8v8"/>
+        </svg>
+        <span>Create Organization</span>
+    </a>
+</div>
+
+{% if user_orgs %}
+    <div class="gap-6 grid sm:grid-cols-2 lg:grid-cols-4 mt-2">
+        {% for org in user_orgs %}
+            <div class="bg-white shadow-md hover:shadow-lg border border-gray-100 rounded-xl overflow-hidden transition duration-300">
+                <img src="{{ org.org_image_url }}" alt="{{ org.org_name }}" class="w-full aspect-video object-cover">
+
+                <div class="p-4 space-y-2">
+                    <h3 class="font-semibold text-gray-800 text-lg truncate">{{ org.org_name }}</h3>
+
+                    <span class="bg-orange-200 px-2 py-1 rounded-2xl text-gray-800 text-xs truncate text-center">{{ org.org_type | title }}</span>
+
+                    <div class="flex gap-2 mt-4">
+                        <a href="{{ url_for("organization_manage", org_id=org.org_id) }}"
+                           class="flex-1 px-3 py-2 rounded-lg text-center bg-gray-100 hover:bg-gray-300 transition-colors">
+                            Manage
+                        </a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <div class="flex flex-wrap justify-between items-center gap-3 mt-6 mb-6">
+        <h2 class="font-bold text-2xl">Other Organizations</h2>
+    </div>
+{% endif %}
+
+{% if organizations %}
+    <div class="gap-6 grid sm:grid-cols-2 lg:grid-cols-4 mt-2">
+        {% for org in organizations %}
+            <div class="bg-white shadow-md hover:shadow-lg border border-gray-100 rounded-xl overflow-hidden transition duration-300">
+                <img src="{{ org.org_image_url }}" alt="{{ org.org_name }}"
+                     class="w-full object-cover aspect-video">
+
+                <div class="p-4">
+                    <a href="{{ url_for("organization_details", org_id=org.org_id) }}" class="truncate max-w-3/5">
+                        <h3 class="mb-2 font-semibold text-gray-800 text-lg hover:underline hover:text-gray-900 transition-colors truncate">{{ org.org_name }}</h3>
+                    </a>
+
+                    <span class="bg-orange-200 px-2 py-1 rounded-2xl text-gray-800 text-xs truncate text-center">{{ org.org_type | title }}</span>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <h3 class="font-lg text-gray-700 mt-10">No organizations found</h3>
+{% endif %}

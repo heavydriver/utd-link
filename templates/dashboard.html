@@ -3,48 +3,39 @@
 {% block content %}
     <script>
         document.addEventListener("DOMContentLoaded", () => {
-            const categorySelect = document.getElementById("category-selection")
-            const sortSelect = document.getElementById("sort-selection")
-            const searchInput = document.getElementById("search-input")
+            const params = new URLSearchParams(window.location.search)
+            const tab = params.get("tab") || "opps"
 
-            const opportunitiesContainer = document.getElementById("opportunities")
-            const opportunityCads = Array.from(document.querySelectorAll(".opportunity-card"))
+            if (tab === "orgs") {
+                document.getElementById("tab-orgs").classList.add("text-white", "bg-utdOrange")
+                document.getElementById("tab-orgs").classList.remove("hover:text-utdOrange")
 
-            function filterOpportunities() {
-                const selectedCategory = categorySelect.value.toLowerCase()
-                const sortBy = sortSelect.value
-                const searchQuery = searchInput.value.toLowerCase()
-
-                // filter based on search input and category
-                let filtered = opportunityCads.filter(card => {
-                    const cardCategory = card.getAttribute("data-category").toLowerCase()
-                    const title = card.getAttribute("data-title").toLowerCase()
-                    const org = card.getAttribute("data-org").toLowerCase()
-
-                    const matchesCategory = selectedCategory === "" || cardCategory === selectedCategory
-
-                    let matchesSearch = true;
-                    if (searchQuery.length > 1) {
-                        matchesSearch = title.includes(searchQuery) || cardCategory.includes(searchQuery) || org.includes(searchQuery)
-                    }
-
-                    return matchesCategory && matchesSearch
+                htmx.ajax('GET', "{{ url_for('dashboard_organizations') }}", {
+                    target: '#tab-content',
+                    swap: 'innerHTML'
                 })
+            } else if (tab === "opps") {
+                document.getElementById("tab-opps").classList.add("text-white", "bg-utdOrange")
+                document.getElementById("tab-opps").classList.remove("hover:text-utdOrange")
 
-                // sort the opportunities
-                if (sortBy === "earliest") {
-                    filtered.sort((a, b) => new Date(a.getAttribute("data-start-date")) - new Date(b.getAttribute("data-start-date")))
-                } else if (sortBy === "latest") {
-                    filtered.sort((a, b) => new Date(b.getAttribute("data-start-date")) - new Date(a.getAttribute("data-start-date")))
-                }
-
-                opportunitiesContainer.innerHTML = ""
-                filtered.forEach((card) => opportunitiesContainer.appendChild(card))
+                htmx.ajax('GET', "{{ url_for('dashboard_opportunities') }}", {
+                    target: '#tab-content',
+                    swap: 'innerHTML'
+                })
             }
 
-            categorySelect.addEventListener("change", filterOpportunities)
-            sortSelect.addEventListener("change", filterOpportunities)
-            searchInput.addEventListener("input", filterOpportunities)
+            // highlight active tab
+            document.querySelectorAll(".tab-btn").forEach(btn => {
+                btn.addEventListener("click", () => {
+                    document.querySelectorAll(".tab-btn").forEach(b => {
+                        b.classList.remove("text-white", "bg-utdOrange")
+                        b.classList.add("hover:text-utdOrange")
+                    })
+
+                    btn.classList.add("text-white", "bg-utdOrange")
+                    btn.classList.remove("hover:text-utdOrange")
+                })
+            })
         })
     </script>
 
@@ -52,95 +43,61 @@
     {% include "partials/navbar.html" %}
 
     <!-- main content -->
-    <main class="flex-grow self-center mt-10 mb-12 px-5 w-full max-w-6xl">
+    <main class="flex-grow self-center mt-10 mb-5 px-5 w-full max-w-7xl">
         <!-- flash messages -->
         <div id="flash-messages" class="transition-all duration-300 mb-5">
             {% include "partials/flash_messages.html" %}
         </div>
 
-        <!-- header -->
-        <div class="flex flex-wrap justify-between items-center gap-3 mb-6">
-            <h2 class="font-bold text-2xl">Opportunities</h2>
+        <div class="flex flex-col md:flex-row gap-5">
+
+            <div class="md:flex">
+                <ul class="flex-column space-y space-y-4 text-sm font-medium text-body md:me-4 mb-4 md:mb-0">
+                    <li>
+                        <a hx-get="{{ url_for("dashboard_opportunities") }}" hx-trigger="click"
+                           hx-target="#tab-content"
+                           hx-swap="innerHTML"
+                           class="tab-btn flex gap-2 text-gray-700 inline-flex items-center px-4 py-2.5 rounded-base hover:cursor-pointer hover:text-utdOrange w-full rounded-lg"
+                           id="tab-opps">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24"
+                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                 stroke-linejoin="round"
+                                 class="lucide lucide-chart-no-axes-combined-icon lucide-chart-no-axes-combined">
+                                <path d="M12 16v5"></path>
+                                <path d="M16 14v7"></path>
+                                <path d="M20 10v11"></path>
+                                <path d="m22 3-8.646 8.646a.5.5 0 0 1-.708 0L9.354 8.354a.5.5 0 0 0-.707 0L2 15"></path>
+                                <path d="M4 18v3"></path>
+                                <path d="M8 14v7"></path>
+                            </svg>
+                            Opportunities
+                        </a>
+                    </li>
+                    <li>
+                        <a hx-get="{{ url_for("dashboard_organizations") }}" hx-trigger="click"
+                           hx-target="#tab-content"
+                           hx-swap="innerHTML"
+                           class="tab-btn flex gap-2 text-gray-700 inline-flex items-center px-4 py-2.5 rounded-base hover:cursor-pointer hover:text-utdOrange w-full rounded-lg"
+                           id="tab-orgs">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24"
+                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                 stroke-linejoin="round" class="lucide lucide-network-icon lucide-network">
+                                <rect x="16" y="16" width="6" height="6" rx="1"></rect>
+                                <rect x="2" y="16" width="6" height="6" rx="1"></rect>
+                                <rect x="9" y="2" width="6" height="6" rx="1"></rect>
+                                <path d="M5 16v-3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3"></path>
+                                <path d="M12 12V8"></path>
+                            </svg>
+                            Organizations
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <div id="tab-content">
+
+            </div>
         </div>
-
-        <!-- search and filter bar -->
-        <div
-                class="flex sm:flex-row flex-col sm:justify-between sm:items-center gap-3 bg-white shadow-sm p-4 border border-gray-200 rounded-lg">
-            <div class="relative flex-1">
-                <input id="search-input" type="text" placeholder="Search opportunities"
-                       class="p-3 pl-10 border border-gray-300 focus:border-utdOrange/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-utdOrange/50 w-full transition"/>
-                <svg xmlns="http://www.w3.org/2000/svg" class="top-3.5 left-3 absolute w-5 h-5 text-gray-400"
-                     fill="none"
-                     viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z"/>
-                </svg>
-            </div>
-
-            <div class="flex gap-3 w-full sm:w-auto">
-                <!-- category select -->
-                <select id="category-selection"
-                        class="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-utdOrange/50 w-full sm:w-48 transition">
-                    <option value="">All Categories</option>
-
-                    {% for category in categories %}
-                        <option value="{{ category }}">{{ category }}</option>
-                    {% endfor %}
-                </select>
-
-                <!-- sort by -->
-                <select id="sort-selection"
-                        class="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-utdOrange/50 w-full sm:w-40 transition">
-                    <option value="">Sort By</option>
-                    <option value="earliest">Date (Earliest)</option>
-                    <option value="latest">Date (Latest)</option>
-                </select>
-            </div>
-        </div>
-
-        <!-- opportunity card -->
-        {% if opportunities %}
-            <div id="opportunities" class="gap-6 grid sm:grid-cols-2 lg:grid-cols-3 mt-8">
-                {% for opp in opportunities %}
-                    <div
-                            class="bg-white shadow-md hover:shadow-lg border border-gray-100 rounded-xl overflow-hidden transition duration-300 opportunity-card"
-                            data-category="{{ opp.category.replace("_", " ").title() }}"
-                            data-start-date="{{ opp.start_date }}"
-                            data-title="{{ opp.title }}"
-                            data-org="{{ opp.org_name }}">
-                        <!-- image -->
-                        <img src="{{ opp.opp_image_url }}" alt="{{ opp.title }}"
-                             class="w-full object-cover aspect-video"/>
-
-                        <div class="p-4">
-                            <!-- title -->
-                            <a href="{{ url_for("opportunity_details", opp_id=opp.opp_id) }}">
-                                <h3
-                                        class="font-semibold text-gray-800 text-lg truncate hover:underline hover:text-gray-900 transition-colors">
-                                    {{ opp.title }}</h3>
-                            </a>
-
-                            <div class="flex justify-between items-center mt-1">
-                                <!-- org name -->
-                                <a href="{{ url_for("organization_details", org_id=opp.org_id) }}"
-                                   class="truncate max-w-3/5">
-                                    <p
-                                            class="text-gray-700 text-sm truncate hover:underline hover:text-gray-900 transition-colors pr-4">
-                                        {{ opp.org_name }}</p>
-                                </a>
-
-                                <!-- category -->
-                                <div class="max-w-2/5">
-                                    <p class="bg-orange-200 px-3 py-2 rounded-2xl text-gray-800 text-xs truncate text-center">{{ opp.category.replace("_", " ").title() }}</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                {% endfor %}
-            </div>
-        {% else %}
-            <h3 class="font-lg text-gray-700 mt-10">No opportunities found</h3>
-        {% endif %}
     </main>
 
     <!-- footer -->

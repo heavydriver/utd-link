@@ -1,7 +1,7 @@
 <nav class="bg-white shadow-gray-200 shadow-sm px-6 py-4">
     <div class="flex justify-between items-center mx-auto max-w-6xl">
         <a class="font-bold text-lg"
-           href="{% if session["user_id"] %} {{ url_for("dashboard") }} {% else %} # {% endif %}"
+           href="{% if session["user_id"] %} {{ url_for("dashboard") }} {% else %}{{ url_for("index") }}{% endif %}"
         ><span class="text-utdOrange">UTD</span>Link</a
         >
         {% if session["user_id"] %}
