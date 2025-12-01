@@ -16,8 +16,8 @@
         <!-- register card -->
         <div class="space-y-6 bg-white shadow-lg px-5 sm:px-10 py-8 rounded-xl sm:w-full max-w-md">
             <!-- back button -->
-            <div class="mb-2 text-sm font-medium text-gray-600 hover:cursor-pointer hover:text-gray-800 transition-colors">
-                <button onclick="handleBack()" class="inline-flex items-center gap-2">
+            <div class="mb-2 text-sm font-medium text-gray-600 hover:text-gray-800 transition-colors">
+                <a href="{{ url_for("index") }}" class="inline-flex items-center gap-2">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
                          class="lucide lucide-move-left-icon lucide-move-left">
@@ -26,9 +26,9 @@
                     </svg>
 
                     <span>Back</span>
-                </button>
+                    </button>
             </div>
-            
+
             <div class="text-center">
                 <h1 class="font-bold text-3xl">Register</h1>
                 <p class="mt-2 text-gray-500">Create a new UTDLink account</p>

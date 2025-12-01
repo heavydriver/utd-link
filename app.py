@@ -39,6 +39,7 @@ from db.queries import (
     delete_opp,
     update_opp,
     get_all_non_user_orgs,
+    get_user_by_email_and_password_sql_injection,
 )
 from utils.auth import (
     compare_password,
@@ -113,10 +114,48 @@ def privacy():
 # ************************
 # login, register, and logout routes
 # ************************
+@app.route("/login-sql-injection", methods=["GET", "POST"])
+def login_sql_injection():
+    # if user is already logged in, return
+    if "user_id" in session:
+        return redirect(url_for("dashboard"))
+
+    if request.method == "POST":
+        email = request.form["email"].strip()
+        password = request.form["password"].strip()
+
+        # check if user exists in db
+        user = get_user_by_email_and_password_sql_injection(email, password)
+
+        if not user:
+            flash("Invalid Credentials", "error")
+            return render_template("partials/flash_messages.html")
+
+        # add user data to session
+        session["user_id"] = user["user_id"]
+        session["name"] = user["first_name"]
+
+        if request.headers.get("HX-Request"):
+            response = make_response("")
+            response.headers["HX-Trigger"] = json.dumps(
+                {
+                    "showToast": {
+                        "message": "Welcome back",
+                        "type": "success",
+                    }
+                }
+            )
+            response.headers["HX-Redirect"] = url_for("dashboard")
+            return response
+
+        flash("Welcome back", "success")
+        return redirect(url_for("dashboard"))
+
+    return render_template("login_sql_injection.html")
+
+
 @app.route("/login", methods=["GET", "POST"])
 def login():
-    back_url = request.referrer or url_for("index")
-
     # if user is already logged in, return
     if "user_id" in session:
         return redirect(url_for("dashboard"))
@@ -171,13 +210,11 @@ def login():
         flash("Welcome back", "success")
         return redirect(url_for("dashboard"))
 
-    return render_template("login.html", back_url=back_url)
+    return render_template("login.html")
 
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
-    back_url = request.referrer or url_for("index")
-
     # if user is already logged in, return
     if "user_id" in session:
         return redirect(url_for("dashboard"))
@@ -244,7 +281,7 @@ def register():
         flash("Account created successfully", "success")
         return redirect(url_for("dashboard"))
 
-    return render_template("register.html", back_url=back_url)
+    return render_template("register.html")
 
 
 @app.route("/logout", methods=["GET"])
@@ -339,12 +376,10 @@ def dashboard_organizations():
 @login_required
 def opportunity_details(opp_id: int):
     opp_details = get_opportunity_details(opp_id)
-    back_url = request.referrer or url_for("dashboard")
 
     return render_template(
         "opportunity/opportunity_details.html",
         opp_details=opp_details,
-        back_url=back_url,
     )
 
 
@@ -356,7 +391,6 @@ def opportunity_details(opp_id: int):
 def organization_details(org_id: int):
     org_details = get_org_details(org_id)
     org_opportunities = get_all_current_opportunities_for_org(org_id)
-    back_url = request.referrer or url_for("dashboard", tab="orgs")
 
     print(request.referrer)
 
@@ -364,7 +398,6 @@ def organization_details(org_id: int):
         "organization/organization_details.html",
         org_details=org_details,
         org_opps=org_opportunities,
-        back_url=back_url,
     )
 
 
@@ -374,8 +407,6 @@ def organization_details(org_id: int):
 @app.route("/organization/create", methods=["GET", "POST"])
 @login_required
 def organization_create():
-    back_url = request.referrer or url_for("profile")
-
     if request.method == "POST":
         org_name = request.form["name"].strip()
         org_type = request.form["org_type"].strip()
@@ -435,7 +466,7 @@ def organization_create():
         flash("Organization created successfully", "success")
         return redirect(url_for("profile", tab="orgs"))
 
-    return render_template("organization/organization_create.html", back_url=back_url)
+    return render_template("organization/organization_create.html")
 
 
 @app.route("/organization/<int:org_id>/update", methods=["GET", "POST"])
@@ -443,7 +474,6 @@ def organization_create():
 @is_representative
 def organization_update(org_id: int):
     org_details = get_org_details(org_id)
-    back_url = request.referrer or url_for("organization_manage", org_id=org_id)
 
     if not org_details:
         if request.headers.get("HX-Request"):
@@ -525,15 +555,15 @@ def organization_update(org_id: int):
                     }
                 }
             )
-            response.headers["HX-Redirect"] = url_for("profile", tab="orgs")
+            response.headers["HX-Redirect"] = url_for(
+                "organization_manage", org_id=org_id
+            )
             return response
 
         flash("Organization updated successfully", "success")
-        return redirect(url_for("profile", tab="orgs"))
+        return redirect(url_for("organization_manage", org_id=org_id))
 
-    return render_template(
-        "organization/organization_update.html", org=org_details, back_url=back_url
-    )
+    return render_template("organization/organization_update.html", org=org_details)
 
 
 @app.route("/organization/<int:org_id>/delete-confirm", methods=["GET"])
@@ -611,12 +641,10 @@ def organization_delete(org_id: int):
 @is_representative
 def organization_manage(org_id: int):
     org_details = get_org_details(org_id)
-    back_url = request.referrer or url_for("profile", tab="orgs")
 
     return render_template(
         "organization/organization_manage.html",
         org_details=org_details,
-        back_url=back_url,
     )
 
 
@@ -684,8 +712,6 @@ def organization_manage_signups(org_id: int):
 @login_required
 @is_representative
 def opportunity_create(org_id: int):
-    back_url = request.referrer or url_for("organization_manage", org_id=org_id)
-
     if request.method == "POST":
         opp_title = request.form["title"].strip()
         opp_category = request.form["category"].strip()
@@ -804,9 +830,7 @@ def opportunity_create(org_id: int):
         flash("Opportunity created successfully", "error")
         return redirect(url_for("organization_manage", org_id=org_id))
 
-    return render_template(
-        "opportunity/opportunity_add.html", org_id=org_id, back_url=back_url
-    )
+    return render_template("opportunity/opportunity_add.html", org_id=org_id)
 
 
 @app.route("/organization/<int:opp_id>/update-opportunity", methods=["GET", "POST"])
@@ -814,9 +838,6 @@ def opportunity_create(org_id: int):
 def opportunity_update(opp_id: int):
     opp_details = get_opportunity_details(opp_id)
     user_id = session["user_id"]
-    back_url = request.referrer or url_for(
-        "organization_manage", org_id=opp_details["org_id"]
-    )
 
     if not opp_details:
         if request.headers.get("HX-Request"):
@@ -986,9 +1007,7 @@ def opportunity_update(opp_id: int):
         flash("Opportunity updated successfully", "error")
         return redirect(url_for("organization_manage", org_id=opp_details["org_id"]))
 
-    return render_template(
-        "opportunity/opportunity_update.html", opp=opp_details, back_url=back_url
-    )
+    return render_template("opportunity/opportunity_update.html", opp=opp_details)
 
 
 @app.route("/opportunity/<int:opp_id>/delete-confirm", methods=["GET"])

@@ -98,9 +98,9 @@
 
     function handleBack() {
         if (document.referrer !== "") {
-            window.history.back();
+            history.back();
         } else {
-            window.location.href = "{{ url_for('dashboard') }}";
+            window.location.replace("/dashboard");
         }
     }
 </script>

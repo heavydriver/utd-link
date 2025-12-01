@@ -4,6 +4,32 @@ from .connection import get_conn, put_conn
 
 
 # ********************************
+# sql injection
+# ********************************
+def get_user_by_email_and_password_sql_injection(email: str, password: str):
+    conn = get_conn()
+    cur = conn.cursor()
+
+    sql = (
+            "SELECT * FROM users WHERE email = '"
+            + email
+            + "' AND password = '"
+            + password
+            + "';"
+    )
+
+    print(sql)
+
+    cur.execute(sql)
+    row = cur.fetchone()
+
+    cur.close()
+    put_conn(conn)
+
+    return row
+
+
+# ********************************
 # queries for users table
 # ********************************
 def get_user_by_email(email: str):
