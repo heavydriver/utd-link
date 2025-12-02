@@ -380,7 +380,7 @@ def opportunity_details(opp_id: int):
     return render_template(
         "opportunity/opportunity_details.html",
         opp_details=opp_details,
-    )
+    )   
 
 
 # ************************
