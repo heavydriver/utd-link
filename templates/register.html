@@ -26,7 +26,7 @@
                     </svg>
 
                     <span>Back</span>
-                    </button>
+                </a>
             </div>
 
             <div class="text-center">
@@ -40,10 +40,14 @@
             </div>
 
             <!-- registration form -->
-            <form hx-post="{{ url_for("register") }}" hx-target="#error-messages" hx-swap="innerHTML"
-                  hx-disabled-elt="#register-button"
-                  method="post"
-                  class="group flex flex-col">
+            <form
+                    hx-post="{{ url_for('register') }}"
+                    hx-target="#error-messages"
+                    hx-swap="innerHTML"
+                    hx-disabled-elt="#register-button"
+                    method="post"
+                    class="group flex flex-col"
+            >
                 <label for="firstName" class="font-semibold text-lg">First Name</label>
                 <input
                         type="text"
